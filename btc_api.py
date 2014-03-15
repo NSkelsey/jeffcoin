@@ -204,7 +204,7 @@ def get_post(txid):
     checksum = struct.unpack('<L', data[4:8])[0] 
     body = data[8:8+length] 
       
-    if checksum != crc32(data): 
+    if checksum != crc32(body): 
         print("DATA is corrupted!") 
     return (body, tx)
  
@@ -215,17 +215,33 @@ def retrieve_posts(txids):
         try: 
             (body, tx_d) = get_post(txid) 
             post = {'body': body,  
-                    'title': txid[:15] + '...',
+                    'title': 'temp',
                     'date': datetime.now(),
                     'id': txid,
                     'tx_dict': tx_d,
                    }
         except JSONRPCException as e:
             post = {'body': str(e) + 'bitcoin rpc error!',
-                    'title': txid[:15] + '...',
+                    'title': 'temp',
                     'id': txid}    
             print("Transaction id: {} broke".format(txid))
         posts.append(post)
     return posts
 
 
+def compute_fee(post):
+    tx = post['tx_dict']
+    out_coin = 0
+    for tx_o in tx['vout']:
+        if tx_o['scriptPubKey']['type'] == "pubkeyhash":
+            out_coin += Decimal(tx_o['value'])
+    in_coin = 0 
+    for tx_in in tx['vin']:
+        prev_tx = proxy.getrawtransaction(tx_in['txid'], 1)
+        val = prev_tx['vout'][tx_in['vout']]['value'] 
+        in_coin += val 
+    return in_coin - out_coin
+
+def coins_left():
+    return proxy.getbalance()
+    

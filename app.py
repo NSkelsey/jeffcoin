@@ -6,7 +6,7 @@ from flask import render_template, request, jsonify
 from flask import g
 from markdown2 import Markdown
  
-from btc_api import retrieve_posts, store_post, InsufficientFunds
+from btc_api import retrieve_posts, store_post, InsufficientFunds, compute_fee, coins_left
 from forms import PostForm
 
 
@@ -18,6 +18,7 @@ app = Flask(__name__)
 markdowner = Markdown()
 
 app.jinja_env.globals['render_markdown'] = markdowner.convert
+app.jinja_env.filters['compute_fee'] = compute_fee
  
 def connect_to_db():
     return sqlite3.connect(DB_PATH) 
@@ -33,6 +34,7 @@ def get_db():
 def close_connection(exception):
     db = getattr(g, '_database', None)
     if db is not None:
+        db.commit()
         db.close()
         
 
@@ -43,12 +45,23 @@ def home():
     cur = get_db().cursor()
     txs = cur.execute('select * from p_transactions').fetchall()
     txids = [tx[0] for tx in txs]
-    
+
     posts = retrieve_posts(txids)
     dates = [datetime.strptime(tx[2], DATE_F) for tx in txs]
     posts = list(map(lambda x: dict(x[0], date=x[1]), zip(posts, dates)))
+
     posts.sort(key=lambda x: x['tx_dict'].get('confirmations', 0))
-    return render_template('home.html', posts=posts)
+    # time diff calculation
+    def diff_t(post):
+        created = post['date']
+        if not post['tx_dict'].get('confirmations', False):
+            return "N/A" 
+        stored = datetime.fromtimestamp(post['tx_dict']['blocktime'])
+        return stored - created
+
+    posts = list(map(lambda x: dict(x, time_diff=diff_t(x)), posts))
+    coin = str(coins_left())
+    return render_template('home.html', posts=posts, coin=coin)
 
 @app.route('/create/')
 def editor():
@@ -72,6 +85,7 @@ def create_post():
             txid = store_post(post)
             cur = get_db().cursor()
             cur.execute('INSERT INTO p_transactions VALUES (?, ?, ?)', (txid, post['title'], post['date'].strftime(DATE_F)))
+            # cursor should close 
             return jsonify(**post), 201
         except InsufficientFunds as e:
             return jsonify(error=str(e))

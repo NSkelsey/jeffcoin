@@ -16,4 +16,4 @@ class MarkdownField(TextField):
 class PostForm(Form):
     title = TextField('title', [Length(min=0, max=500), 
                                 Required()])
-    body = MarkdownField('body', [Length(min=0, max=9000)])
+    body = MarkdownField('body', [Length(min=0, max=5000)])
