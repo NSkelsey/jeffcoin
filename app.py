@@ -4,16 +4,19 @@ import sqlite3
 from flask import Flask
 from flask import render_template, request, jsonify
 from flask import g
+from werkzeug.contrib.fixers import ProxyFix
 from markdown2 import Markdown
  
 from btc_api import retrieve_posts, store_post, InsufficientFunds, compute_fee, coins_left
 from forms import PostForm
 
 
+DEV = False
 DB_PATH = './test.db'
 DATE_F = "%Y-%m-%d %H:%M:%S"
 
 app = Flask(__name__)
+app.wsgi_app = ProxyFix(app.wsgi_app)
 
 markdowner = Markdown()
 
@@ -94,5 +97,8 @@ def create_post():
         jsonify(error='Your form did not validate')
 
 if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0')
-
+    if DEV:
+        app.run(debug=True, host='0.0.0.0')
+    else: 
+        app.run()
+    

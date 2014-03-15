@@ -12,7 +12,7 @@
                             Created: {{ post.date.strftime('%H:%M %b %d, %Y') }}
                             {% if post.tx_dict.confirmations %}
                             <div class="confirmed">
-                            Confirms: {{ post.tx_dict.confirmations }}
+                            Depth: {{ post.tx_dict.confirmations }}
                             </div>
                             {% else %}
                             <div class="unconfirmed">
@@ -31,7 +31,7 @@
         <div class="post-foot">
             Size: {{ post.body | length / 1000 }} KB,
             Time to Confirm: {{ post.time_diff }},
-            Fees: {{ post | compute_fee }} ฿ 
+            Fee: {{ post | compute_fee }} ฿ 
         </div>
     </div>
 {% endmacro %}

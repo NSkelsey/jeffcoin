@@ -4,7 +4,7 @@
 <div id="title">
     <div class="row">
         <h2 id=ask>Create a post in the block chain!</h2>
-        <h2>{{ coin | truncate(6, True, "") }}฿ Left to spend!</h2>
+        <h2>{{ coin | truncate(5, True, "") }} ฿ Left to spend!</h2>
         <div class="row">
             <div class="col-md-12">
                 <a href="{{ url_for('editor') }}"><button class="btn btn-primary">And How!</button></a>
