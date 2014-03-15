@@ -1,0 +1,24 @@
+{% macro inline(post) %}
+    <div class="post-inline">
+        <div class="head">
+            <div class="row">
+                <div class="span6">
+                    <h3><a href="http://blockexplorer.com/testnet/tx/{{ post.id }}">{{ post.title | safe or post.pub_date }}</a></h3>
+                </div>
+                <div class="span6">
+                    {% if post.tx_dict %} 
+                        Confirms: {{ post.tx_dict.confirmations }}
+                        Created At: {{ post.tx_dict.time }}
+                        {% if post.tx_dict.confirmations > 0 %}
+                        Blocktime: {{ post.tx_dict.blocktime }}
+                        {% endif %}
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+        <p>
+            {{ render_markdown(post.body) | safe }}
+        </p>
+    </div>
+{% endmacro %}
