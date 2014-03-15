@@ -11,6 +11,7 @@ from forms import PostForm
 
 
 DB_PATH = './test.db'
+DATE_F = "%Y-%m-%d %H:%M:%S"
 
 app = Flask(__name__)
 
@@ -44,6 +45,9 @@ def home():
     txids = [tx[0] for tx in txs]
     
     posts = retrieve_posts(txids)
+    dates = [datetime.strptime(tx[2], DATE_F) for tx in txs]
+    posts = list(map(lambda x: dict(x[0], date=x[1]), zip(posts, dates)))
+    posts.sort(key=lambda x: x['tx_dict'].get('confirmations', 0))
     return render_template('home.html', posts=posts)
 
 @app.route('/create/')
@@ -67,7 +71,7 @@ def create_post():
         try:
             txid = store_post(post)
             cur = get_db().cursor()
-            cur.execute('INSERT INTO p_transactions (?, ?, ?)', (txid, post['title'], post['date']))
+            cur.execute('INSERT INTO p_transactions VALUES (?, ?, ?)', (txid, post['title'], post['date'].strftime(DATE_F)))
             return jsonify(**post), 201
         except InsufficientFunds as e:
             return jsonify(error=str(e))

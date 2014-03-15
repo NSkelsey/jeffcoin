@@ -6,3 +6,8 @@ p {
 #post-list {
     margin-left: 20px;
 }
+
+.post-meta {
+    margin-top: 20px;
+    float: right;
+}

@@ -194,7 +194,6 @@ def store_post(post):
  
 def get_post(txid): 
     tx = proxy.getrawtransaction(txid,1) 
-    tx_dict = proxy.gettransaction(txid)
     data = b'' 
     for txout in tx['vout'][0:-1]: 
         for op in txout['scriptPubKey']['asm'].split(' '): 
@@ -207,7 +206,7 @@ def get_post(txid):
       
     if checksum != crc32(data): 
         print("DATA is corrupted!") 
-    return (body, tx_dict)
+    return (body, tx)
  
 def retrieve_posts(txids):
     posts = [] 
@@ -222,7 +221,7 @@ def retrieve_posts(txids):
                     'tx_dict': tx_d,
                    }
         except JSONRPCException as e:
-            post = {'body': 'bitcoin rpc error!',
+            post = {'body': str(e) + 'bitcoin rpc error!',
                     'title': txid[:15] + '...',
                     'id': txid}    
             print("Transaction id: {} broke".format(txid))

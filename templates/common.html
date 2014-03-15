@@ -2,18 +2,20 @@
     <div class="post-inline">
         <div class="head">
             <div class="row">
-                <div class="span6">
+                <div class="col-md-5">
                     <h3><a href="http://blockexplorer.com/testnet/tx/{{ post.id }}">{{ post.title | safe or post.pub_date }}</a></h3>
                 </div>
-                <div class="span6">
+                <div class="col-md-7">
+                   <h4 class=post-meta>
                     {% if post.tx_dict %} 
+                        {% if post.tx_dict.confirmations %}
                         Confirms: {{ post.tx_dict.confirmations }}
-                        Created At: {{ post.tx_dict.time }}
-                        {% if post.tx_dict.confirmations > 0 %}
-                        Blocktime: {{ post.tx_dict.blocktime }}
+                        Time to Confirm: {{ post.tx_dict.blocktime - post.date }}
+                        {% else %}
+                        TRANSACTION UNCONFIRMED
                         {% endif %}
                     {% endif %}
-
+                   </h4>
                 </div>
             </div>
         </div>
