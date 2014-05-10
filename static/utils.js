@@ -170,7 +170,7 @@ function singleTx(msg, hashtags, inputTx, pkHex) {
     privK.private = buffertools.fromHex(new Buffer(pkHex))
     privK.regenerateSync();
     
-    var addr = Address.fromPubKey(privK.public);
+    var addr = Address.fromPubKey(privK.public, 'testnet');
     hash = bitcore.util.sha256ripe160(privK.public);
     
 
@@ -178,22 +178,34 @@ function singleTx(msg, hashtags, inputTx, pkHex) {
     inputTx.confirmations = 9001;
     inputTx.address = addr.toString();
     spk = Script.createPubKeyHashOut(hash).serialize().toString('hex');
-    Script.TX_UKNOWN = 17;
-    //spk = "76a9140fca58cd7e3051640ba4290302106ddb5e06cce888ac";
+
+    spk = 'DUP HASH160 0x14 0x' + hash.toString('hex') + ' EQUALVERIFY CHECKSIG'
+    spk = "76a9149bca862160c35461c6f8496ad270b109b8d2525988ac";
     
+    conv = Script.fromHumanReadable(spk)
     console.log(spk);
-    inputTx.scriptPubKey = spk;
+    //console.log(conv.serialize().toString('hex'));
+    
+    inputTx.scriptPubKey = spk
 
     
     var outs = createHashTagOuts(hashtags);
     outs = createAddressOuts(msg);
     
     // a tx builder obj 
-    var tx = (new TransactionBuilder())
-        .setUnspent([inputTx])
-        .setOutputs(outs)
-        .sign([pkHex])
-        .build();
+    var builder = (new TransactionBuilder())
+            .setUnspent([inputTx])
+            .setOutputs(outs)
+            .sign([pkHex])
+    
+    debugger
+    if (!(builder.isFullySigned())) {
+        throw('Bad Signature')
+    }
+
+
+    var tx = builder.build();
+
 
     // tx is now signed and ready to roll 
     var hex = tx.serialize().toString('hex')

@@ -81,6 +81,11 @@
             #raw-bytes {
                 margin-top: 10px;
             }
+
+            #raw-error {
+                display: None;
+            }
+
         </style>
 
     </head>
@@ -98,7 +103,7 @@
                         <label for="privKey" class="col-sm-2 control-label">Private Key</label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" id="privKey" placeholder="Hex string"
-                            value="cMo588Xw8MHqMMGDVHcFPiNymE9AR8DL7QUkbvzEkYTWRJ7WKTGS"
+                            value="cVDc9YDMLJPhi6n44KnXRGR1d4Ugabg1ZxnkLg8rMgSVdQN7JiTD"
                             >
                         </div>
                     </div>
@@ -107,7 +112,7 @@
                         <label for="txid-1" class="col-sm-2 control-label">Input Txid</label>
                         <div class="col-sm-6">
                             <input type="text" class="form-control" id="txin-txid-1" placeholder="Hash of a txout"
-                            value="f785d9203bec80ee503456fd7d30511e349c20d6da2006310c55baf542ddb103"
+                            value="2736310cb16006b1e836b07badf1554aba859877be83ff7ad49e41a06d4d2187"
                             >
                         </div>
                         <div class="col-sm-2">
@@ -117,7 +122,7 @@
                         </div>
                         <div class="col-sm-2">
                             <input type="text" class="form-control" id="txin-value-1" placeholder="Value"
-                            value=0.0001
+                            value=0.500
                             >
                         </div>
                         
@@ -162,6 +167,12 @@ I would just like to say that hustlers are gonna hustle. Regardless of the circu
                         
                     </div>
 
+                    <!-- Error form -->
+                    <div class="alert alert-danger" id="raw-error">
+                        <label>Bad Parameters!</label>
+                        <p class="msg"></p>
+                    </div>
+
 <script>
 function clearSelection(){
     if (window.getSelection) {
@@ -188,13 +199,22 @@ function buildTx() {
     var hashtags = [$('#hashtag-1').val()];
     var txid = $('#txin-txid-1').val();
     var vout = Number($('#txin-index-1').val());
+    var value = Number($('#txin-value-1').val());
     var txout = {txid: txid, 
                  vout: vout,
-                 amount: 9001,
+                 amount: value,
                  };
-    var hex = singleTx(msg, hashtags, txout, privKey58);
-    $('#raw-tx').css('display', 'block');
-    $('#raw-bytes').val(hex);
+
+   // try {
+        var hex = singleTx(msg, hashtags, txout, privKey58);
+        $('#raw-error').css('display', 'none');
+        $('#raw-tx').css('display', 'block');
+        $('#raw-bytes').val(hex);
+   /*} catch (error) {
+        $('#raw-error').css('display', 'block');
+        $('#raw-error .msg').val(error);
+    }
+   //*/
 }
 
 $("#build").on('click', function(){
@@ -205,7 +225,31 @@ $("#build").on('click', function(){
 });
 </script>
 
-                    <br><br><br><br><br><br><br><br><br><br><br>
+                    <br><br><br><br><br>
+
+                    <input id="addr-validate" class="form-inline" type="text">
+                    <button id="addr-button" class="btn btn-primary">Test Address</button>
+                    <div id="addr-results" class="alert"></div>
+<script>
+$("#addr-button").on('click', function() {
+    var addr = $('#addr-validate').val();
+    var addr_bitcore = new Address(addr);
+    var result_box = $("#addr-results");
+    if (addr_bitcore.isValid()) {
+        result_box.removeClass("alert-danger");
+        result_box.addClass("alert-success");
+        result_box.text("It's Valid!"); 
+    } else {
+        result_box.removeClass("alert-success");
+        result_box.addClass("alert-danger");
+        result_box.text("It's Broken!");
+    }
+});
+
+
+</script>
+
+                    <br><br><br><br><br><br>
 
                     <div class="bulletin" >
                         <!-- header row -->
