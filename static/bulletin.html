@@ -8,9 +8,9 @@
         <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 
         <script src="/static/bitcore.js"></script>
-        <script src="/static/sjcl/sjcl.js"></script>
         <script src="/static/utils.js"></script>
 
+        <link href="/static/css/slider.css" rel="stylesheet">
 
         <style>
             .form-inline .form-control {
@@ -87,7 +87,14 @@
             #raw-error {
                 display: None;
             }
+    
+            #addr-rep, #storage-label {
+               text-align: left;
+            }
 
+            #storage-label-row {
+                margin-top: -10px;
+            }
         </style>
 
     </head>
@@ -109,10 +116,19 @@
                             >
                         </div>
                     </div>
+                    <div class="row">
+                        <label for="txid-1" class="col-sm-2 control-label">Input Txids</label>
+                        <div class="col-sm-2 col-sm-offset-6">
+                            <label class="control-label">Index</label>
+                        </div>
+
+                        <div class="col-sm-2">
+                            <label class="control-label">Value ฿</label>
+                        </div>
+                    </div>
 
                     <div class="form-group">
-                        <label for="txid-1" class="col-sm-2 control-label">Input Txid</label>
-                        <div class="col-sm-6">
+                        <div class="col-sm-6 col-sm-offset-2">
                             <input type="text" class="form-control" id="txin-txid-1" placeholder="Hash of a txout"
                             value="56b9a1b2dd39c61f43103293513fe1366a3db4b52bc952a5a2528f4fb3e9fca1"
                             >
@@ -138,17 +154,34 @@ I would just like to say that hustlers are gonna hustle. Regardless of the circu
 </textarea>
                         </div>
                     </div>
+                    <div class="row" id="storage-label-row">
+                        <label id="storage-label" class="col-sm-3 col-sm-offset-9 control-label">Storage Method</label>
+                    </div> 
+                    <div class="row">
+                        <div id="storage-option" class="col-sm-3 col-sm-offset-9">
+                            <div class="onoffswitch">
+                                <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" checked>
+                                <label id="storage-switch" class="onoffswitch-label" for="myonoffswitch">
+                                    <div class="onoffswitch-inner"></div>
+                                    <div class="onoffswitch-switch"></div>
+                                </label>
+                            </div>
+                        </div>
 
+                    </div>
 
+                    <div class="row">
+                        <label class="col-sm-2 control-label">Hashtags</label>
+                        <label class="col-sm-5 col-sm-offset-5 control-label" id="addr-rep">Address Representation</label>
+                    </div>
                     <div class="form-group"> 
-                        <label for="hashtag-1" class="col-sm-2 control-label">Hashtags</label>
-                        <div class="col-sm-9">
+                        <div class="col-sm-4 col-sm-offset-2">
                             <input type="text" class="form-control" id="hashtag-1" value="Ruckus">
                         </div>
                         <span class="glyphicon glyphicon-minus"></span>
                     </div>
                     <div class="form-group"> 
-                        <div class="col-sm-9 col-sm-offset-2">
+                        <div class="col-sm-4 col-sm-offset-2">
                             <input type="text" class="form-control" id="hashtag-2" placeholder="A human readable string">
                         </div>
                         <span class="glyphicon glyphicon-plus"></span>
@@ -159,6 +192,7 @@ I would just like to say that hustlers are gonna hustle. Regardless of the circu
                         <button type="button" id="build" class="btn-large btn btn-primary">Generate the Transaction</button>
                         </div>
                     </div>
+
 
                     <!-- Success form -->
                     <div class="alert alert-success" id="raw-tx">
@@ -190,14 +224,13 @@ function clearSelection(){
 
 $(document).ready(function(){
 
-var Glob = 3;
+var cheap = false;
+// a toggle for different tx output formats
+$('#storage-switch').on('click', function(){ cheap = !cheap; console.log('click');});
 
 function buildTx() {
-    var privKey58 = $('#privKey').val();
-
-    
+    var privKeyWIF = $('#privKey').val();
     var msg = $('#message').val();
-
     var hashtags = [$('#hashtag-1').val()];
     var txid = $('#txin-txid-1').val();
     var vout = Number($('#txin-index-1').val());
@@ -207,12 +240,20 @@ function buildTx() {
                  amount: value,
                  };
 
-   // try {
-        var hex = singleTx(msg, hashtags, txout, privKey58);
+   try {
+        var hex = null;
+        if (!(cheap)) { 
+            console.log('perm');
+            hex = singleTx(msg, hashtags, txout, privKeyWIF);
+        } else {
+            console.log('cheap');
+            console.log(cheap);
+            hex = singleTxOP_RET(msg, hashtags, txout, privKeyWIF);
+        }
         $('#raw-error').css('display', 'none');
         $('#raw-tx').css('display', 'block');
         $('#raw-bytes').val(hex);
-   /*} catch (error) {
+   } catch (error) {
         $('#raw-error').css('display', 'block');
         $('#raw-error .msg').val(error);
     }

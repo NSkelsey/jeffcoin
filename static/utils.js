@@ -10,29 +10,31 @@ var Buffer = bitcore.Buffer;
 var Key = bitcore.Key;
 var Script = bitcore.Script;
 var buffertools = bitcore.buffertools;
+var Opcode = bitcore.Opcode;
 
 var MAX_OP_RETURN_RELAY = 40;
 var MIN_TX_OUT = 0.00000546;
 
 
-/*
+
 // chunk is a utf string
-function createSmallData(chunk){
+function createOP_RETURN(chunk){
     // as defined by our friends at https://github.com/bitcoin/bitcoin/blob/ae7e5d7cebd9466d0c095233c9273e72e88fede1/src/script.h#L212
-    var OP_SMALLDATA = 249; 
+    var OP_RET = Opcode.map['OP_RETURN']; 
     var script = new Script();
 
-    script.writeOp(OP_SMALLDATA);
+    script.writeOp(OP_RET);
     script.writeBytes(chunk);
 
     if (script.length > MAX_OP_RETURN_RELAY) {
         throw "Script too large, len: " + script.length;
     }
     return script;
-}*/
+}
 
 
-/*
+
+
 // pass in a msg to send and get the output needed to form a valid txn
 function createCheapOuts(msg){
     // deal with script generation
@@ -42,31 +44,26 @@ function createCheapOuts(msg){
         throw "This is twitter not some blog service"
     } 
 
-    // round up
+    // round up. Note we do not have to pad since OP_RET can push 40 or lower
     var numOuts = Math.ceil(raw.length / MAX_OP_RETURN_RELAY);
     var outs = [];
 
     for (var i = 0; i < numOuts; i++){
     
-        var msgWidth = MAX_OP_RETURN_RELAY - 1,
+        var msgWidth = MAX_OP_RETURN_RELAY,
             slice = raw.slice(0, msgWidth),
-            script = createSmallData(slice)
+            script = createOP_RETURN(slice)
             raw = raw.slice(msgWidth);
 
-        var data = {
-            script: script,
-            value: MIN_TX_OUT * COIN
-        }; 
         var txOut = new TransactionOut();
-        txOut.v = data.value;
-        txOut.s = data.script;
+        // out has v <out satoshis>  = 0 and s <script> set to buf of len 42
+        txOut.v = new Buffer(8)
+        txOut.s = script.serialize();
         outs.push(txOut);
-        console.log(typeof txOut.serialize);
     }
-    console.log(outs)
     return outs
 }
-*/
+
 
 
 function encodeAddr(input_bin){
@@ -157,59 +154,90 @@ function createHashTagOuts(hashtags) {
     return outs
 }
 
+// Takes a private key in WIF format and returns
+// a public key in binary
+function privToPub(privWIF) {
+    if (52 > privWIF.length || privWIF.length > 53) {
+        throw("The private key provided is not in the right format");
+    }
+    var key = new Key();
+    // Since bitcoin reports the keys in a WIF format we must chop
+    var privBin = base58.decode(privWIF).slice(1,33)
+    key.private = privBin
+    key.regenerateSync()
+    
+    return key.public
+}
+
+function formulateInput(inputMap, pubKey) {
+    // converts an input of {txoud: <hash>, vout: <pos>, amount: <BTC>}
+    // into a valid input tx of form:
+    // {txout: <hash>, vout: <pos>, amount: <BTC>,
+    //  confirmations: <num>, address: <base58>,
+    //  scriptPubKey: <hex>}
+
+    var addr = Address.fromPubKey(pubKey, 'testnet');
+    var hash = bitcore.util.sha256ripe160(pubKey);
+    var pubKey = Script.createPubKeyHashOut(hash).serialize().toString('hex');
+
+    // filling out {confirmations, address, scriptPubkey} in txin obj
+    inputMap.confirmations = 9001;
+    inputMap.address = addr.toString();
+    inputMap.scriptPubKey = pubKey
+
+    return inputMap
+}
+
+
+
+function singleTxOP_RET(msg, hashtags, inputTx, pkWIF) {
+    var pubKey = privToPub(pkWIF);
+    inputTx = formulateInput(inputTx, pubKey);
+    
+    var outs = createHashTagOuts(hashtags);
+    var msg_outs = createCheapOuts(msg);
+    
+    var builder = (new TransactionBuilder())
+            .setUnspent([inputTx])
+            .setOutputs(outs)  
+    
+    // add our custom formulated OP_RETs to the TX    
+    msg_outs.forEach(function(out) { 
+        builder.tx.outs.push(out); 
+    });
+
+    // now sign and build    
+    builder.sign([pkWIF])
+    var tx = builder.build()
+    var hex = tx.serialize().toString('hex')
+    return hex
+}
+
+
+
 // Generates a single transaction that contains a msg
 // callback is the function that gets called with the 
 // signed transaction when this function returns
-function singleTx(msg, hashtags, inputTx, pkWIF) {
+function singleTx(msg, hashtags, inputObj, pkWIF) {
     // msg is a string
     // hashtag is a string
     // inputTx = {txout: <hash>, vout: <index>, amount: <BTC>}
     // pkWIF is a base58 private Key
-
-    var privK = new Key();
-                    // Since bitcoin reports the keys in a WIF format we must chop
-    privK.private = base58.decode(pkWIF).slice(1,33);
-    privK = privK.regenerateSync();
-    
-    var addr = Address.fromPubKey(privK.public, 'testnet');
-    hash = bitcore.util.sha256ripe160(privK.public);
-
-    // filling out {confirmations, address, scriptPubkey} in txin obj
-    inputTx.confirmations = 9001;
-    inputTx.address = addr.toString();
-
-    spk1 = "76a9149bca862160c35461c6f8496ad270b109b8d2525988ac";
-
-    humane = 'DUP HASH160 0x14 0x' + hash.toString('hex') + ' EQUALVERIFY CHECKSIG'
-    conv = Script.fromHumanReadable(humane)
-    spk2 = conv.serialize().toString('hex')
-    spk3 = Script.createPubKeyHashOut(hash).serialize().toString('hex');
-    
-    console.log(spk1);
-    console.log(spk2);
-    console.log(spk3);
-    
-    inputTx.scriptPubKey = spk2
-
-    
+    var pubKey = privToPub(pkWIF);
+    var inputTx = formulateInput(inputObj, pubKey);
+        
     var outs = createHashTagOuts(hashtags);
     outs = createAddressOuts(msg);
     
-    // a tx builder obj 
     var builder = (new TransactionBuilder())
             .setUnspent([inputTx])
             .setOutputs(outs)
             .sign([pkWIF])
     
     if (!(builder.isFullySigned())) {
-        debugger;
-        throw('Bad Signature')
+        throw('Bad Signature, the transaction remains unsigned')
     }
-
-
     var tx = builder.build();
-
-
     // tx is now signed and ready to roll 
     var hex = tx.serialize().toString('hex')
     return hex
