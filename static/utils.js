@@ -160,33 +160,36 @@ function createHashTagOuts(hashtags) {
 // Generates a single transaction that contains a msg
 // callback is the function that gets called with the 
 // signed transaction when this function returns
-function singleTx(msg, hashtags, inputTx, pkHex) {
+function singleTx(msg, hashtags, inputTx, pkWIF) {
     // msg is a string
     // hashtag is a string
     // inputTx = {txout: <hash>, vout: <index>, amount: <BTC>}
-    // pkHex is a base58 string 
+    // pkWIF is a base58 private Key
 
     var privK = new Key();
-    privK.private = buffertools.fromHex(new Buffer(pkHex))
-    privK.regenerateSync();
+                    // Since bitcoin reports the keys in a WIF format we must chop
+    privK.private = base58.decode(pkWIF).slice(1,33);
+    privK = privK.regenerateSync();
     
     var addr = Address.fromPubKey(privK.public, 'testnet');
     hash = bitcore.util.sha256ripe160(privK.public);
-    
 
     // filling out {confirmations, address, scriptPubkey} in txin obj
     inputTx.confirmations = 9001;
     inputTx.address = addr.toString();
-    spk = Script.createPubKeyHashOut(hash).serialize().toString('hex');
 
-    spk = 'DUP HASH160 0x14 0x' + hash.toString('hex') + ' EQUALVERIFY CHECKSIG'
-    spk = "76a9149bca862160c35461c6f8496ad270b109b8d2525988ac";
+    spk1 = "76a9149bca862160c35461c6f8496ad270b109b8d2525988ac";
+
+    humane = 'DUP HASH160 0x14 0x' + hash.toString('hex') + ' EQUALVERIFY CHECKSIG'
+    conv = Script.fromHumanReadable(humane)
+    spk2 = conv.serialize().toString('hex')
+    spk3 = Script.createPubKeyHashOut(hash).serialize().toString('hex');
     
-    conv = Script.fromHumanReadable(spk)
-    console.log(spk);
-    //console.log(conv.serialize().toString('hex'));
+    console.log(spk1);
+    console.log(spk2);
+    console.log(spk3);
     
-    inputTx.scriptPubKey = spk
+    inputTx.scriptPubKey = spk2
 
     
     var outs = createHashTagOuts(hashtags);
@@ -196,10 +199,10 @@ function singleTx(msg, hashtags, inputTx, pkHex) {
     var builder = (new TransactionBuilder())
             .setUnspent([inputTx])
             .setOutputs(outs)
-            .sign([pkHex])
+            .sign([pkWIF])
     
-    debugger
     if (!(builder.isFullySigned())) {
+        debugger;
         throw('Bad Signature')
     }
 
