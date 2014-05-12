@@ -29,6 +29,8 @@
     
 
             .button-row {
+                border-top: 1px solid #e5e5e5;
+                padding-top: 20px;
                 margin: 20px auto 20px auto;
             }
 
@@ -88,111 +90,109 @@
                 display: None;
             }
     
-            #addr-rep, #storage-label {
+            #addr-rep {
                text-align: left;
             }
 
-            #storage-label-row {
-                margin-top: -10px;
-            }
         </style>
 
     </head>
     <body>
         <div class="container">
             <div class="row">
-                <div class="col-xs-8">
+                <div class="col-lg-10">
                     <h2>Create a new Bulletin! <small>From the comfort of your browser</small></h2> 
                     <p>Enter your private key for the address you want to send from, your message and any hashtags you want to tag your bulletin with.</p> 
                     
                     <!-- form input for a bulletin -->
                     <form class="form-horizontal" role="form">
 
+                    <legend>Bitcoin Parameters</legend>
                     <div class="form-group">
-                        <label for="privKey" class="col-sm-2 control-label">Private Key</label>
-                        <div class="col-sm-10">
+                        <label for="privKey" class="col-lg-2 control-label">Private Key</label>
+                        <div class="col-lg-10">
                             <input type="text" class="form-control" id="privKey" placeholder="Hex string"
                             value="cVDc9YDMLJPhi6n44KnXRGR1d4Ugabg1ZxnkLg8rMgSVdQN7JiTD"
                             >
                         </div>
                     </div>
-                    <div class="row">
-                        <label for="txid-1" class="col-sm-2 control-label">Input Txids</label>
-                        <div class="col-sm-2 col-sm-offset-6">
-                            <label class="control-label">Index</label>
+                    <div class="form-group">
+                        <label for="txin-txid-1" class="col-lg-2 control-label">Input Txid</label>
+                        <div class="col-lg-10">
+                            <div class="row">
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control" id="txin-txid-1" placeholder="Hash of a txout"
+                                value="56b9a1b2dd39c61f43103293513fe1366a3db4b52bc952a5a2528f4fb3e9fca1"
+                                >
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="input-group">
+                                    <span class="input-group-addon">Vout</span>
+                                    <input type="text" class="form-control" id="txin-index-1" placeholder="Index"
+                                    value=1
+                                    >
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="input-group">
+                                    <span class="input-group-addon">BTC</span>
+                                    <input type="text" class="form-control" id="txin-value-1" placeholder="Value"
+                                    value=0.250
+                                    >
+                                </div>
+                            </div>
+                            </div> 
                         </div>
-
-                        <div class="col-sm-2">
-                            <label class="control-label">Value ฿</label>
+                    </div>
+                     <div class="row">
+                        <label for="storage-option" class="col-lg-2 control-label">Storage Method</label>
+                        <div class="col-sm-3">
+                            <div id="storage-method" class="btn-group" data-toggle="buttons">
+                              <label class="btn btn-primary active">
+                                <input name="options" type="radio" value="permanent">
+                                Permanent
+                              </label>
+                              <label class="btn btn-primary">
+                                <input name="options" type="radio" value="cheap">
+                                Cheap
+                              </label>
+                            </div>                        
                         </div>
                     </div>
 
+                    </br>  
+                    <legend>Bulletin Content</legend>
                     <div class="form-group">
-                        <div class="col-sm-6 col-sm-offset-2">
-                            <input type="text" class="form-control" id="txin-txid-1" placeholder="Hash of a txout"
-                            value="56b9a1b2dd39c61f43103293513fe1366a3db4b52bc952a5a2528f4fb3e9fca1"
-                            >
-                        </div>
-                        <div class="col-sm-2">
-                            <input type="text" class="form-control" id="txin-index-1" placeholder="Index"
-                            value=1
-                            >
-                        </div>
-                        <div class="col-sm-2">
-                            <input type="text" class="form-control" id="txin-value-1" placeholder="Value"
-                            value=0.250
-                            >
-                        </div>
-                        
-                    </div>
-    
-                    <div class="form-group">
-                        <label for="message" class="col-sm-2 control-label">Message</label>
-                        <div class="col-sm-10">
-                            <textarea rows=3 maxlength=140 class="form-control" id="message" placeholder="Write your message here">
-I would just like to say that hustlers are gonna hustle. Regardless of the circumstances.
+                        <label for="message" class="col-lg-2 control-label">Message</label>
+                        <div class="col-lg-10">
+                            <textarea rows=3 maxlength=140 class="form-control" id="message" placeholder="Write your message here">I would just like to say that hustlers are gonna hustle. Regardless of the circumstances.
 </textarea>
                         </div>
                     </div>
-                    <div class="row" id="storage-label-row">
-                        <label id="storage-label" class="col-sm-3 col-sm-offset-9 control-label">Storage Method</label>
-                    </div> 
                     <div class="row">
-                        <div id="storage-option" class="col-sm-3 col-sm-offset-9">
-                            <div class="onoffswitch">
-                                <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" checked>
-                                <label id="storage-switch" class="onoffswitch-label" for="myonoffswitch">
-                                    <div class="onoffswitch-inner"></div>
-                                    <div class="onoffswitch-switch"></div>
-                                </label>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div class="row">
-                        <label class="col-sm-2 control-label">Hashtags</label>
-                        <label class="col-sm-5 col-sm-offset-5 control-label" id="addr-rep">Address Representation</label>
                     </div>
                     <div class="form-group"> 
-                        <div class="col-sm-4 col-sm-offset-2">
+                        <label for="hashtag-1" class="col-lg-2 control-label">Hashtags</label>
+                        <div class="col-sm-4">
                             <input type="text" class="form-control" id="hashtag-1" value="Ruckus">
                         </div>
-                        <span class="glyphicon glyphicon-minus"></span>
-                    </div>
-                    <div class="form-group"> 
-                        <div class="col-sm-4 col-sm-offset-2">
-                            <input type="text" class="form-control" id="hashtag-2" placeholder="A human readable string">
+                        <div class="col-sm-4">
+                            <div class="input-group">
+                                <span class="input-group-addon">#</span>
+                                <input type="text" class="form-control" readonly="readonly"></input>
+                            </div>
                         </div>
-                        <span class="glyphicon glyphicon-plus"></span>
+                        <div class="col-sm-2">
+                            <button class="btn btn-default" type="button">+</button>&nbsp<button class="btn btn-default" disabled="disabled" type="button">–</button>
+                        </div>
                     </div>
+
                     </form>
                     <div class="row button-row">
-                        <div class="col-sm-offset-3 col-sm-7">
+                        <div class="col-sm-12">
                         <button type="button" id="build" class="btn-large btn btn-primary">Generate the Transaction</button>
                         </div>
                     </div>
-
 
                     <!-- Success form -->
                     <div class="alert alert-success" id="raw-tx">
@@ -224,11 +224,13 @@ function clearSelection(){
 
 $(document).ready(function(){
 
-var cheap = false;
-// a toggle for different tx output formats
-$('#storage-switch').on('click', function(){ cheap = !cheap; console.log('click');});
 
 function buildTx() {
+    // Storage method switch
+    var method = $('#storage-method .active input').val()
+    var cheap = (method === 'cheap');
+
+
     var privKeyWIF = $('#privKey').val();
     var msg = $('#message').val();
     var hashtags = [$('#hashtag-1').val()];
@@ -254,6 +256,7 @@ function buildTx() {
         $('#raw-tx').css('display', 'block');
         $('#raw-bytes').val(hex);
    } catch (error) {
+        $('#raw-tx').css('display', 'none');
         $('#raw-error').css('display', 'block');
         $('#raw-error .msg').val(error);
     }
