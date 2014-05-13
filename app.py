@@ -11,7 +11,7 @@ from btc_api import retrieve_posts, store_post, InsufficientFunds, compute_fee, 
 from forms import PostForm
 
 
-DEV = False
+DEV = True
 DB_PATH = './test.db'
 DATE_F = "%Y-%m-%d %H:%M:%S"
 
@@ -41,6 +41,13 @@ def close_connection(exception):
         db.close()
         
 
+@app.route('/submit') 
+def submit():
+    """
+    Renders the submission template uses the broken as fuck  
+    internal json rpc.
+    """
+    return render_template('submit.html')
 
 @app.route('/') 
 def home():     

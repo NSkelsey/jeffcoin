@@ -169,7 +169,7 @@ function privToPub(privWIF) {
     return key.public
 }
 
-function formulateInput(inputMap, pubKey) {
+function formulateInput(inputMap, pubKey, network) {
     // converts an input of {txoud: <hash>, vout: <pos>, amount: <BTC>}
     // into a valid input tx of form:
     // {txout: <hash>, vout: <pos>, amount: <BTC>,
@@ -177,8 +177,8 @@ function formulateInput(inputMap, pubKey) {
     //  scriptPubKey: <hex>}
 
     var addr = Address.fromPubKey(pubKey);
-    if (NETNAME === 'testnet') { 
-        addr = Address.fromPubKey(pubKey, NETNAME);
+    if (network === 'testnet') { 
+        addr = Address.fromPubKey(pubKey, network);
     }
     var hash = bitcore.util.sha256ripe160(pubKey);
     var pubKey = Script.createPubKeyHashOut(hash).serialize().toString('hex');
@@ -193,9 +193,9 @@ function formulateInput(inputMap, pubKey) {
 
 
 
-function singleTxOP_RET(msg, hashtags, inputTx, pkWIF) {
+function singleTxOP_RET(msg, hashtags, inputTx, pkWIF, network) {
     var pubKey = privToPub(pkWIF);
-    inputTx = formulateInput(inputTx, pubKey);
+    inputTx = formulateInput(inputTx, pubKey, network);
     
     var outs = createHashTagOuts(hashtags);
     var msg_outs = createCheapOuts(msg);
@@ -221,13 +221,14 @@ function singleTxOP_RET(msg, hashtags, inputTx, pkWIF) {
 // Generates a single transaction that contains a msg
 // callback is the function that gets called with the 
 // signed transaction when this function returns
-function singleTx(msg, hashtags, inputObj, pkWIF) {
+function singleTx(msg, hashtags, inputObj, pkWIF, network) {
     // msg is a string
     // hashtag is a string
     // inputTx = {txout: <hash>, vout: <index>, amount: <BTC>}
     // pkWIF is a base58 private Key
+    // A string of either 'testnet' or 'mainnet'
     var pubKey = privToPub(pkWIF);
-    var inputTx = formulateInput(inputObj, pubKey);
+    var inputTx = formulateInput(inputObj, pubKey, network);
         
     var h_outs = createHashTagOuts(hashtags);
     var outs = createAddressOuts(msg);

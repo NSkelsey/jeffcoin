@@ -108,6 +108,21 @@
                     <form class="form-horizontal" role="form">
 
                     <legend>Bitcoin Parameters</legend>
+                    <div id='network' class="form-group">
+                        <label for="network" class="col-lg-2 control-label">Network</label>
+                        <div class="col-lg-3">
+                            <div class="btn-group" data-toggle="buttons">
+                              <label class="btn btn-default active">
+                                <input name="options" type="radio" value="mainnet">
+                                Mainet
+                              </label>
+                              <label class="btn btn-default">
+                                <input name="options" type="radio" value="testnet">
+                                Testnet
+                              </label>
+                            </div> 
+                        </div>
+                    </div>
                     <div class="form-group">
                         <label for="privKey" class="col-lg-2 control-label">Private Key</label>
                         <div class="col-lg-10">
@@ -144,9 +159,9 @@
                             </div> 
                         </div>
                     </div>
-                     <div class="row">
-                        <label for="storage-option" class="col-lg-2 control-label">Storage Method</label>
-                        <div class="col-sm-3">
+                     <div class="form-group">
+                        <label for="storage-method" class="col-lg-2 control-label">Storage Method</label>
+                        <div class="col-lg-3">
                             <div id="storage-method" class="btn-group" data-toggle="buttons">
                               <label class="btn btn-primary active">
                                 <input name="options" type="radio" value="permanent">
@@ -338,6 +353,7 @@ function buildTx() {
     var method = $('#storage-method .active input').val()
     var cheap = (method === 'cheap');
 
+    var network = $('#network .active input').val();
 
     var privKeyWIF = $('#privKey').val();
     var msg = $('#message').val();
@@ -365,9 +381,9 @@ function buildTx() {
    try {
         var hex = null;
         if (!(cheap)) { 
-            hex = singleTx(msg, hashtags, txout, privKeyWIF);
+            hex = singleTx(msg, hashtags, txout, privKeyWIF, network);
         } else {
-            hex = singleTxOP_RET(msg, hashtags, txout, privKeyWIF);
+            hex = singleTxOP_RET(msg, hashtags, txout, privKeyWIF, network);
         }
         $('#raw-error').css('display', 'none');
         $('#raw-tx').css('display', 'block');
