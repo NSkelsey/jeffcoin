@@ -8,9 +8,9 @@
         <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 
         <script src="/static/bitcore.js"></script>
+        <script src="/static/jsbn.js"></script>
         <script src="/static/utils.js"></script>
-
-        <link href="/static/css/slider.css" rel="stylesheet">
+        <script src="/static/addrnames.js"></script>
 
         <style>
             .form-inline .form-control {
@@ -169,21 +169,61 @@
 </textarea>
                         </div>
                     </div>
-                    <div class="row">
-                    </div>
-                    <div class="form-group"> 
-                        <label for="hashtag-1" class="col-lg-2 control-label">Hashtags</label>
-                        <div class="col-sm-4">
-                            <input type="text" class="form-control" id="hashtag-1" value="Ruckus">
-                        </div>
-                        <div class="col-sm-4">
-                            <div class="input-group">
-                                <span class="input-group-addon">#</span>
-                                <input type="text" class="form-control" readonly="readonly"></input>
+                    <div id="hashtags">
+                        <div class="form-group"> 
+                            <label for="hashtag-1" class="col-lg-2 control-label">Hashtags</label>
+                            <div class="col-sm-3 controls">
+                                <input type="text" maxlength="25" class="form-control hashtag-bare" id="hashtag-1-input" value="Ruckus">
+                            </div>
+                            <div class="col-sm-5">
+                                <div class="input-group">
+                                    <span class="input-group-addon">#</span>
+                                    <input id="hashtag-1-val" type="text" class="form-control hashtag-rdy" readonly="readonly" value="1RuckusXXXXXXXXXXXXXXXXXXXXZgUo7i"></input>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <button class="btn btn-default plus" type="button">+</button>&nbsp<button class="btn btn-default minus" type="button">–</button>
                             </div>
                         </div>
-                        <div class="col-sm-2">
-                            <button class="btn btn-default" type="button">+</button>&nbsp<button class="btn btn-default" disabled="disabled" type="button">–</button>
+
+                    </div>
+                    <!-- Reference copy of hashtag form group -->
+                        <div id='hashtag-cc' style="display: none" class="form-group"> 
+                            <label for="hashtag-bare" class="col-lg-2 control-label"></label>
+                            <div class="col-sm-3 controls">
+                                <input type="text" maxlength="25" class="form-control hashtag-bare" value="">
+                            </div>
+                            <div class="col-sm-5">
+                                <div class="input-group">
+                                    <span class="input-group-addon">#</span>
+                                    <input type="text" class="form-control hashtag-rdy" readonly="readonly" value=""></input>
+                                </div>
+                            </div>
+                        </div>
+                    <!-- Reference copy of usertag form group -->
+                        <div id='usertag-cc' style="display: none" class="form-group">
+                            <label for="usertag"  class="col-lg-2 control-label">Cc</label>
+                            <div class="col-sm-5 controls">
+                                <div class="input-group">
+                                    <span class="input-group-addon">@</span>
+                                    <input type="text" class="form-control usertag" maxlength=34 value=""></input>
+                                </div>
+                            </div>
+                        </div>
+
+                    <!-- UserTags -->
+                    <div id="usertags">
+                        <div class="form-group"> 
+                            <label for="usertag-1" class="col-lg-2 control-label">UserTags</label>
+                            <div class="col-sm-5 controls">
+                                <div class="input-group">
+                                    <span class="input-group-addon">@</span>
+                                    <input id="usertag-1" type="text" class="form-control usertag" maxlength=34 value="1RUCKXcHqhW8QR9jya1TaZe2zmGrjc8jb"></input>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <button class="btn btn-default plus" type="button">+</button>&nbsp<button class="btn btn-default minus" type="button">–</button>
+                            </div>
                         </div>
                     </div>
 
@@ -224,6 +264,74 @@ function clearSelection(){
 
 $(document).ready(function(){
 
+var Address = require('bitcore').Address;
+
+var plusHandler = function(name) {
+  return function() {
+    var idSel = '#' + name + 's'
+                                    // copy events
+    var copy = $('#' + name + '-cc').clone(true);
+    copy.css('display', 'block')
+        .attr('id', '');
+    if ($(idSel).children().length > 3) {
+        return 0
+    } else {
+        $(idSel).append(copy);
+        $(idSel + ' button.minus').removeAttr('disabled');
+    }
+  }
+}
+
+var minusHandler = function(name) {
+  return function() {
+    var idSel = '#' + name + 's'
+    var formGroups = $(idSel).children()
+    var len = formGroups.length;
+    if (len > 1) {
+        formGroups[formGroups.length - 1].remove()
+    } else {
+        var first = $(formGroups[0])
+        first.find('input').val('');
+        $(name + ' button.minus').attr('disabled', 'disabled');
+    }
+  }
+}
+
+
+$('#usertags button.plus').on('click', plusHandler('usertag'))
+$('#hashtags button.plus').on('click', plusHandler('hashtag'))
+$('#usertags button.minus').on('click', minusHandler('usertag'))
+$('#hashtags button.minus').on('click', minusHandler('hashtag'))
+
+$('.hashtag-bare').keyup(function() {
+    try { 
+        $(this).parent().removeClass('has-error') 
+        var addrTag = addrNames.addressForStr($(this).val()); 
+        $(this).parents('.form-group').find('.hashtag-rdy').val(addrTag);
+    } catch (error) {
+        $(this).parent().addClass('has-error');
+    }
+});
+
+$('input.usertag').keyup(function() {
+    $(this).parent().removeClass('has-error');
+    addrStr = $(this).val(); 
+    addr = new Address(addrStr);
+    if (!(addr.isValid())){ 
+        // addr is invalid
+        $(this).parent().addClass('has-error');
+    }
+});
+
+function proccessTags(raw_tags){
+    tags = [];
+    raw_tags.forEach(function(str){
+        if (str.length > 30) {
+            tags.push(str);
+        }
+    });
+    return tags;
+}
 
 function buildTx() {
     // Storage method switch
@@ -233,7 +341,17 @@ function buildTx() {
 
     var privKeyWIF = $('#privKey').val();
     var msg = $('#message').val();
-    var hashtags = [$('#hashtag-1').val()];
+    var hashtags = [];
+    var usertags = [];
+    $('#usertags input.usertag').each(function(i,inp){
+                usertags.push($(inp).val())
+    });
+    $('#hashtags input.hashtag-rdy').each(function(i,inp){
+                hashtags.push($(inp).val())
+    });
+
+    var hashtags = proccessTags(hashtags.concat(usertags));
+
     var txid = $('#txin-txid-1').val();
     var vout = Number($('#txin-index-1').val());
     var value = Number($('#txin-value-1').val());
@@ -242,14 +360,13 @@ function buildTx() {
                  amount: value,
                  };
 
+   
+   console.log
    try {
         var hex = null;
         if (!(cheap)) { 
-            console.log('perm');
             hex = singleTx(msg, hashtags, txout, privKeyWIF);
         } else {
-            console.log('cheap');
-            console.log(cheap);
             hex = singleTxOP_RET(msg, hashtags, txout, privKeyWIF);
         }
         $('#raw-error').css('display', 'none');
@@ -258,7 +375,7 @@ function buildTx() {
    } catch (error) {
         $('#raw-tx').css('display', 'none');
         $('#raw-error').css('display', 'block');
-        $('#raw-error .msg').val(error);
+        $('#raw-error .msg').text(error);
     }
    //*/
 }

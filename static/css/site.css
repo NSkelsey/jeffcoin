@@ -19,6 +19,11 @@ div.head {
     margin-bottom: 15px;
 }
 
+.how-btn {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
 .post-foot {
     float: right;
     color: #888;
@@ -56,4 +61,13 @@ color: green;
 
 .post-meta > div {
     display: inline;
+}
+
+
+/*    submit       */
+
+#input-box {
+    height: 15%;
+    width: 40%;
+
 }

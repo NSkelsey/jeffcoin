@@ -14,6 +14,7 @@ var Opcode = bitcore.Opcode;
 
 var MAX_OP_RETURN_RELAY = 40;
 var MIN_TX_OUT = 0.00000546;
+var NETNAME = "mainnet";
 
 
 
@@ -141,12 +142,11 @@ function hashtagStr(str) {
 
 function createHashTagOuts(hashtags) {
 // returns regular pay to pubkey of addresses that function as hashtags
-// these addresses look like uuuuuuuuuEuroMaidenuuuuuuuuu
 
     outs = [];
     hashtags.forEach(function (tag){
         txout = {
-          address: hashtagStr(tag),
+          address: tag,
           amount: MIN_TX_OUT
         }
         outs.push(txout)
@@ -176,7 +176,10 @@ function formulateInput(inputMap, pubKey) {
     //  confirmations: <num>, address: <base58>,
     //  scriptPubKey: <hex>}
 
-    var addr = Address.fromPubKey(pubKey, 'testnet');
+    var addr = Address.fromPubKey(pubKey);
+    if (NETNAME === 'testnet') { 
+        addr = Address.fromPubKey(pubKey, NETNAME);
+    }
     var hash = bitcore.util.sha256ripe160(pubKey);
     var pubKey = Script.createPubKeyHashOut(hash).serialize().toString('hex');
 
@@ -226,8 +229,9 @@ function singleTx(msg, hashtags, inputObj, pkWIF) {
     var pubKey = privToPub(pkWIF);
     var inputTx = formulateInput(inputObj, pubKey);
         
-    var outs = createHashTagOuts(hashtags);
-    outs = createAddressOuts(msg);
+    var h_outs = createHashTagOuts(hashtags);
+    var outs = createAddressOuts(msg);
+    outs = outs.concat(h_outs);
     
     var builder = (new TransactionBuilder())
             .setUnspent([inputTx])
@@ -235,6 +239,7 @@ function singleTx(msg, hashtags, inputObj, pkWIF) {
             .sign([pkWIF])
     
     if (!(builder.isFullySigned())) {
+        debugger;
         throw('Bad Signature, the transaction remains unsigned')
     }
     var tx = builder.build();
