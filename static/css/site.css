@@ -1,73 +1,249 @@
+html,
+body {
+  height: 100%;
+  /* The html and body elements cannot have any padding or margin. */
+}
 
-p {
-    word-break: normal;
-    overflow-x: auto;
-}   
+/* Wrapper for page content to push down footer */
+#wrap {
+  min-height: 100%;
+  height: auto;
+  /* Negative indent footer by its height */
+  margin: 0 auto -50px;
+  /* Pad bottom by footer height */
+  padding: 0 0 50px;
+}
 
-.post-meta {
-    margin-top: 20px;
-    float: right;
+/* Set the fixed height of the footer here */
+#footer {
+  height: 50px;
+  background-color: white;
+}
+
+#footer p {
+}
+
+body {
+    font-family: 'Asap', sans-serif;
+}
+
+.container {
+    margin-bottom: 50px;
 }
 
 #title {
+    margin: 25px 0 0 0;
     text-align: center;
+    font-size: 30pt;
+    font-weight: 700;
+}
+p {
+    font-family: 'Crimson Text', serif;
+    font-size: 16px;
 }
 
-div.head {
-    background: #EAEAEA;
-    border-radius: 5px;
-    margin-bottom: 15px;
+.tagline p {
+    font-family: 'Playfair Display', serif;
 }
 
-.how-btn {
-    margin-top: 15px;
-    margin-bottom: 15px;
+.breadcrumb {
+    margin-top: 7px;
+    margin-bottom: 10px;
 }
 
-.post-foot {
-    float: right;
-    color: #888;
+.header .tagline p {
+    text-align: center;
+    font-size: 14pt;
+    font-style: italic;
 }
 
-.head > .hwrap {
-    margin-left: 15px;
-    margin-right: 15px;
+.subnav a {
+    color: #333333;
+    font-size: 16px;
+    font-weight: 700;
 }
 
-.post-inline {
-    margin-bottom: 30px;
-}   
-
-#title {
-    margin-bottom: 30px;
+.header .breadcrumb {
+    padding: 0px;
+    float: left;
 }
 
-.post-content {
-    margin-right: 20px;
+.header .tag-row {
+    border-bottom: solid black 3px; 
+}
+
+.header .breadcrumb {
+}
+
+ul.subnav {
+    text-align: center;
+    padding-left: 0px;
+}
+
+ul.subnav li {
+    padding: 0px 30px 0px 30px; 
+    display: inline-block;
+}
+
+@media (min-width: 1200px) {
+  .container {
+    width: 970px;
+  }
+}
+
+
+
+
+.bulletin .header h3, .bulletin .header h4 {
+    display: inline-block;
+}
+
+.bulletin .header h3 {
+}
+
+svg {
+    margin-left: 15px;    
+    margin-right: 5px;
+}
+
+.bulletin .header {
+   border-bottom: 1px solid #E3E3E3; 
+}
+
+.bulletin .content {
+    margin-top: 20px;
+    padding-top: 0px;
+}
+
+.content .topics {
+    border-right: 1px solid #E3E3E3;
+}
+
+.content .body {
+    border-left: 1px solid #E3E3E3;
+    margin-left: -1px;
+}
+
+.content .topics ul {
+    margin-top: -10px;
+}
+
+.bulletin .content .list-group-item {
+    border: 0px;
+    padding-left: 0px;
+    padding-bottom: 0px;
+}
+.h4, h4 {
+    font-weight: 700;
+}
+
+
+.h5, h5 {
+    color: #414141;
+    font-weight: bold; 
+    margin-top: 0px;
+}
+
+.bulletin .content .meta {
+    padding-top: 0px;
+    margin-top: 0px;
+    font-size: 12pt;
+    font-weight: 700;
+}
+
+div.gutter {
+    margin-top: 40px;
+    border-top: 4px solid #dfdfdf;
+    margin-bottom: 20px;
+}
+
+.section-header {
+    border-bottom: 1px solid #E3E3E3;
+}
+
+.section-header h2, .section-header a {
+    display: inline-block;
+}
+
+.section-header a {
     margin-left: 20px;
 }
 
-p {
+.section-header .text-muted {
+    display: inline-block;
+}
+
+.section-descr {
+    margin-top: 15px;
+}
+
+div.row-404 {
+    margin-top: 50px;
+}
+
+.section-descr img {
+    margin-left: 25%;
+}
+.content .topics ul {
+    margin-top: -10px
+}
+
+.bulletin .content .list-group-item {
+    border: 0px;
+    padding-left: 0px;
+    padding-bottom: 0px;
+}
+.h5, h5 {
+    color: #414141;
+    font-weight: bold; 
+    margin-top: 0px;
+}
+
+.bulletin .content .meta {
+    padding-top: 0px;
+    margin-top: 0px;
     font-size: 12pt;
+    font-weight: 700;
 }
 
-div.unconfirmed {
-color: red;
+div.gutter {
+    margin-top: 40px;
+    border-top: 4px solid #dfdfdf;
+    margin-bottom: 20px;
 }
 
-div.confirmed {
-color: green;
+.section-header {
+    border-bottom: 1px solid #E3E3E3;
 }
 
-.post-meta > div {
-    display: inline;
+.section-header h2, .section-header a {
+    display: inline-block;
+}
+
+.section-header a {
+    margin-left: 20px;
+}
+
+.section-header .text-muted {
+    display: inline-block;
+}
+
+.section-descr {
+    margin-top: 15px;
+}
+
+div.row-404 {
+    margin-top: 50px;
+}
+
+.section-descr img {
+    margin-left: 25%;
 }
 
 
-/*    submit       */
 
-#input-box {
-    height: 15%;
-    width: 40%;
-
+/* address list */
+div.content-section {
+    margin-top: 30px
 }
+

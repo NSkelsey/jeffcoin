@@ -2,7 +2,7 @@ var bitcore = require('bitcore');
 var networks = bitcore.networks;
 var Script = bitcore.Script;
 var Address = bitcore.Address;
-var base58 = bitcore.base58
+var base58 = bitcore.base58;
 var COIN = bitcore.util.COIN;
 var TransactionBuilder = bitcore.TransactionBuilder;
 var TransactionOut = bitcore.Transaction.Out;
@@ -41,28 +41,28 @@ function createCheapOuts(msg){
     // deal with script generation
     var raw = new Buffer(msg);
 
-    if (raw.length > 140) {
-        throw "This is twitter not some blog service"
+    if (raw.length > 400) {
+        throw "This is twitter not some blog service";
     } 
 
     // round up. Note we do not have to pad since OP_RET can push 40 or lower
-    var numOuts = Math.ceil(raw.length / MAX_OP_RETURN_RELAY);
+    var numOuts = 1 //Math.ceil(raw.length / MAX_OP_RETURN_RELAY);
     var outs = [];
 
     for (var i = 0; i < numOuts; i++){
     
-        var msgWidth = MAX_OP_RETURN_RELAY,
+        var msgWidth = 500,//MAX_OP_RETURN_RELAY,
             slice = raw.slice(0, msgWidth),
-            script = createOP_RETURN(slice)
+            script = createOP_RETURN(slice);
             raw = raw.slice(msgWidth);
 
         var txOut = new TransactionOut();
         // out has v <out satoshis>  = 0 and s <script> set to buf of len 42
-        txOut.v = new Buffer(8)
+        txOut.v = new Buffer(8);
         txOut.s = script.serialize();
         outs.push(txOut);
     }
-    return outs
+    return outs;
 }
 
 
@@ -72,14 +72,14 @@ function encodeAddr(input_bin){
         throw("input must be less than 20 bytes long");
     } 
 
-    empt = String.fromCharCode(95)
-    pad = Array(20 - input_bin.length + 1).join(empt)
+    empt = String.fromCharCode(95);
+    pad = Array(20 - input_bin.length + 1).join(empt);
     bin = new Buffer(input_bin + new Buffer(pad));
 
                 // testnet address version
-    var ver = networks.testnet.addressVersion
+    var ver = networks.testnet.addressVersion;
     var addr = new Address(ver, bin);
-    return addr.toString()
+    return addr.toString();
 }
 
 function decodeAddr(address){
@@ -88,7 +88,7 @@ function decodeAddr(address){
     
     str = data.toString('utf-8');
 
-    return str
+    return str;
 }
 
 function decodeAddressOuts(outs){
@@ -96,11 +96,11 @@ function decodeAddressOuts(outs){
     var msg = "";
 
     outs.forEach(function (out) {
-        var addr = out.scriptPubKey.addresses[0]
-        var chunk = decodeAddr(addr)
+        var addr = out.scriptPubKey.addresses[0];
+        var chunk = decodeAddr(addr);
         msg += chunk;
     });
-    return msg
+    return msg;
 }
  
 function createAddressOuts(msg) {
@@ -110,26 +110,26 @@ function createAddressOuts(msg) {
         throw("This is twitter damnit");
     }
     var numNeeded = Math.ceil(buf.length / 20);
-    var outs = []
+    var outs = [];
 
     for (var i = 0; i < numNeeded; i++){
         var slice = buf.slice(0, 20);
         buf = buf.slice(20);
         
-        var addr = encodeAddr(slice)
+        var addr = encodeAddr(slice);
         txout = {
             address: addr,
             amount: MIN_TX_OUT
         };
         outs.push(txout);
     }
-    return outs
+    return outs;
 }
 
 function hashtagStr(str) {
 // centers and pads a hashtag
     if (str.length > 20) {
-       throw("provided address must be maximum 20 bytes")
+       throw("provided address must be maximum 20 bytes");
     }
     var lenPad = (20 - str.length)/2 + 1,
         leftPad = Array(Math.ceil(lenPad)).join('u'),
@@ -137,7 +137,7 @@ function hashtagStr(str) {
         padded = leftPad + str + rightPad,
         buf = new Buffer(padded),
         addr = new Address(111, buf);
-    return addr.toString()
+    return addr.toString();
 }
 
 function createHashTagOuts(hashtags) {
@@ -148,10 +148,10 @@ function createHashTagOuts(hashtags) {
         txout = {
           address: tag,
           amount: MIN_TX_OUT
-        }
-        outs.push(txout)
+        };
+        outs.push(txout);
     });
-    return outs
+    return outs;
 }
 
 // Takes a private key in WIF format and returns
@@ -162,11 +162,11 @@ function privToPub(privWIF) {
     }
     var key = new Key();
     // Since bitcoin reports the keys in a WIF format we must chop
-    var privBin = base58.decode(privWIF).slice(1,33)
-    key.private = privBin
-    key.regenerateSync()
+    var privBin = base58.decode(privWIF).slice(1,33);
+    key.private = privBin;
+    key.regenerateSync();
     
-    return key.public
+    return key.public;
 }
 
 function formulateInput(inputMap, pubKey, network) {
@@ -186,9 +186,9 @@ function formulateInput(inputMap, pubKey, network) {
     // filling out {confirmations, address, scriptPubkey} in txin obj
     inputMap.confirmations = 9001;
     inputMap.address = addr.toString();
-    inputMap.scriptPubKey = pubKey
+    inputMap.scriptPubKey = pubKey;
 
-    return inputMap
+    return inputMap;
 }
 
 
@@ -198,11 +198,11 @@ function singleTxOP_RET(msg, hashtags, inputTx, pkWIF, network) {
     inputTx = formulateInput(inputTx, pubKey, network);
     
     var outs = createHashTagOuts(hashtags);
-    var msg_outs = createCheapOuts(msg);
+    var msg_outs = createCheapOuts('-- ahmisa-0.0.0 -- ' + msg);
     
     var builder = (new TransactionBuilder())
             .setUnspent([inputTx])
-            .setOutputs(outs)  
+            .setOutputs(outs); 
     
     // add our custom formulated OP_RETs to the TX    
     msg_outs.forEach(function(out) { 
@@ -210,10 +210,10 @@ function singleTxOP_RET(msg, hashtags, inputTx, pkWIF, network) {
     });
 
     // now sign and build    
-    builder.sign([pkWIF])
-    var tx = builder.build()
-    var hex = tx.serialize().toString('hex')
-    return hex
+    builder.sign([pkWIF]);
+    var tx = builder.build();
+    var hex = tx.serialize().toString('hex');
+    return hex;
 }
 
 
@@ -237,14 +237,14 @@ function singleTx(msg, hashtags, inputObj, pkWIF, network) {
     var builder = (new TransactionBuilder())
             .setUnspent([inputTx])
             .setOutputs(outs)
-            .sign([pkWIF])
+            .sign([pkWIF]);
     
     if (!(builder.isFullySigned())) {
         debugger;
-        throw('Bad Signature, the transaction remains unsigned')
+        throw('Bad Signature, the transaction remains unsigned');
     }
     var tx = builder.build();
     // tx is now signed and ready to roll 
-    var hex = tx.serialize().toString('hex')
-    return hex
+    var hex = tx.serialize().toString('hex');
+    return hex;
 }
