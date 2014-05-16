@@ -34,8 +34,14 @@ body {
 #title {
     margin: 25px 0 0 0;
     text-align: center;
+}
+
+
+#title a {
     font-size: 30pt;
     font-weight: 700;
+    color: black !important;
+    text-decoration: none;
 }
 p {
     font-family: 'Crimson Text', serif;
@@ -90,8 +96,6 @@ ul.subnav li {
     width: 970px;
   }
 }
-
-
 
 
 .bulletin .header h3, .bulletin .header h4 {
@@ -240,10 +244,86 @@ div.row-404 {
     margin-left: 25%;
 }
 
-
-
 /* address list */
-div.content-section {
+div.content-section, .section-content {
     margin-top: 30px
 }
 
+.example .bigger {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.example .smaller {
+}
+
+.example .first {
+    width: 50%;
+}
+
+.col-centered {
+    float: none;
+    margin: 0 auto;
+}
+
+.example .well {
+    margin-top: 20px;
+    word-wrap: break-word;
+    margin-bottom: 20px;
+}
+
+.example p {
+    font-size: 20px;
+    text-align: center;
+}
+
+.example p.pem {
+    font-style: italic;
+    display: inline;
+}
+
+.example img, .example .img {
+    display: block;
+    margin: 40px auto 0px auto;
+}
+
+.example .sec {
+    margin-top: 80px;
+}
+
+.example em {
+    font-size: 12px;
+    text-align: center;
+    display: block;
+    margin-top: 120px;
+}
+
+div.example {
+    margin-top: 50px;
+}
+
+div.image {
+    margin-top: 60px;
+}
+
+div.image img {
+    margin-left: auto;
+    margin-right:auto;
+    display: block;
+}
+
+/* Gizmos */
+#addr-results { display: inline }
+
+.about h5 {
+display: inline-block;
+}
+
+
+div.list-title {
+    border-bottom: 2px solid black;
+}
+
+h3.list-title {
+    text-align: center;
+}

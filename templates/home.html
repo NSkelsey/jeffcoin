@@ -1,27 +1,41 @@
 {% extends 'base.html' %}
+{% from 'common.html' import inline %}
 {% block main %}
-<div id="title">
-    <div class="row">
-        <h2 id=ask>Create a post in the block chain!</h2>
-        <div class="row how-btn">
-            <div class="col-md-12">
-                <a href="{{ url_for('editor') }}"><button class="btn btn-primary">Show me How!</button></a>
-            </div>
-        </div>
-        <h4>It'll show up here at some point.</h4> 
-        <h4>Only {{ coin | truncate(5, True, "") }} ฿ Left to spend!</h4>
-        <h5><em>These are testnet bitcoins, relax</em></h5>
+
+<div class="example">
+
+    <div class="sec">
+    <p class="bigger">You can store tweets in the blockchain.
+    <p class="bigger">We are calling them bulletins.</p>
+    <p class="bigger">Here's how it works.</p>
+    </div>
+
+    <div class="sec">
+    <p class=" smaller col-centered">Any phone with an internet connection can transact with the bitcoin network.</p>
+    <p>That same app can encode messages in those transactions.</p>
+    </div>
+
+    <em>Like this one (those are bytes):</em>
+
+    <div class="img well">0100000001a1fce9b34f8f52a2a552c92bb5b43d6a36e13f51933210431fc639ddb2a1b956010000006c493046022100e1f882b771ee53a8a4cab76366bcc27ec96dc1bdf6bc9a9fda67433eceba73f9022100bcec15f7fe67f2e67e503560fbd433ce51d6d13dba50a14f01a21baf7e64b9ba012102dec81cb41b4bf2024572ebd1a429728cf5c8eeee60908f432174ae1540006022ffffffff0822020000000000001976a9144920776f756c64206a757374206c696b6520746f88ac22020000000000001976a91420736179207468617420687573746c657273206188ac22020000000000001976a914726520676f6e6e6120687573746c652e2052656788ac22020000000000001976a9146172646c657373206f662074686520636972637588ac22020000000000001976a9146d7374616e6365732e0a5f5f5f5f5f5f5f5f5f5f88ac22020000000000001976a91404b5e7b660eb58f7352d1a76c23b530fabe1bc8788ac22020000000000001976a91404a0af38e0a72b6d858356cbc381590b1a56b68488ac42427d01000000001976a9149bca862160c35461c6f8496ad270b109b8d2525988ac00000000</div>
+
+    
+    <p class="sec">Since every transaction in bitcoin is public every bitcoin node sees your message.</p>
+
+    <em>Normally they look like this:</em>
+
+    <img src="/static/imgs/tx-ftw.png" />
+
+    <p class="sec">Some nodes (like this server) are listening for these messages and displays them so that <i class='pem'>you</i>, the general public, can <i>read</i> them.</p>
+
+    <em>Here is one of ours:</em>
+</div>
+    {{ inline(live_demo) }}
 
 
-        <h4>Or formulate your own cool bulletin! <a href="{{ url_for('static', filename='bulletin.html') }}">Here!</a></h4>
-    </div>
+<div class="row image">
+        <img src='/static/imgs/ahimsa.png' width=693 height=535 />
 </div>
-<div id="post-list">
-    {% from 'common.html' import inline %}
-    {% for post in posts %}
-    <div class="row post-inline">
-            {{ inline(post) }}
-    </div>
-    {% endfor %}
-</div>
+
+
 {% endblock main %}

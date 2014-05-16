@@ -1,111 +1,97 @@
 from datetime import datetime
 
+
 import sqlite3
 from flask import Flask
 from flask import render_template, request, jsonify
 from flask import g
+from flask.ext.sqlalchemy import SQLAlchemy
 from werkzeug.contrib.fixers import ProxyFix
 from markdown2 import Markdown
  
+import filters
+import config
+from api import InsightApi 
 from btc_api import retrieve_posts, store_post, InsufficientFunds, compute_fee, coins_left
 from forms import PostForm
+from models import Base, Address, Bulletin, Topic, Username
+from utils import secrets_for_post
 
 
 DEV = True
-DB_PATH = './test.db'
 DATE_F = "%Y-%m-%d %H:%M:%S"
 
 app = Flask(__name__)
+app.config.from_object(config)
 app.wsgi_app = ProxyFix(app.wsgi_app)
 
 markdowner = Markdown()
 
 app.jinja_env.globals['render_markdown'] = markdowner.convert
 app.jinja_env.filters['compute_fee'] = compute_fee
- 
-def connect_to_db():
-    return sqlite3.connect(DB_PATH) 
-                
-     
-def get_db():
-    db = getattr(g, '_database', None)
-    if db is None:
-        db = g._database = connect_to_db()
-    return db
+app.jinja_env.filters['nice_date'] = filters.nice_date
 
-@app.teardown_appcontext
-def close_connection(exception):
-    db = getattr(g, '_database', None)
-    if db is not None:
-        db.commit()
-        db.close()
-        
+db = SQLAlchemy(app)
+db.Model = Base
 
-@app.route('/submit') 
-def submit():
-    """
-    Renders the submission template uses the broken as fuck  
-    internal json rpc.
-    """
-    return render_template('submit.html')
-
-@app.route('/') 
-def home():     
-    """Shows all posts stored by our service"""
-    cur = get_db().cursor()
-    txs = cur.execute('select * from p_transactions').fetchall()
-    txids = [tx[0] for tx in txs]
-
-    posts = retrieve_posts(txids)
-    dates = [datetime.strptime(tx[2], DATE_F) for tx in txs]
-    posts = list(map(lambda x: dict(x[0], date=x[1]), zip(posts, dates)))
-
-    posts.sort(key=lambda x: x['tx_dict'].get('confirmations', 0))
-    # time diff calculation
-    def diff_t(post):
-        created = post['date']
-        if not post['tx_dict'].get('confirmations', False):
-            return "N/A" 
-        stored = datetime.fromtimestamp(post['tx_dict']['blocktime'])
-        return stored - created
-
-    posts = list(map(lambda x: dict(x, time_diff=diff_t(x)), posts))
-    coin = str(coins_left())
-    return render_template('home.html', posts=posts, coin=coin)
+@app.route('/')
+def home():
+    recent = db.session.query(Bulletin).first() 
+    recent.body = "This is a sample message that demonstrates that you can store all sorts of things in the blockchain. Not just transactions"
+    recent.creator = Username('mnickskeLAByW5VtyKS94bcc2HJdqnU4wz')
+    recent.usertags.append(Username('malex53WsAByW5VtyKS94bcc2HJdqnU4wz'))
+    return render_template('home.html', live_demo=recent)  
 
 @app.route('/create/')
-def editor():
-    post = {'body': 'change me too', 'title': 'change me'}
-    form = PostForm()
-    return render_template('editor.html', post=post, form=form)
+def create():
+    bitcoin_params = secrets_for_post()
+    return render_template('bulletin.html', bitcoin_params=bitcoin_params)
 
-@app.route('/posts/', methods=['POST'])
-def create_post():
-    """Creates a post a puts it in the block chain and stores it locally"""
-    if not request.json:
-        abort(400)
-    form = PostForm.from_json(request.json, skip_unkown_keys=False)
-    if form.validate():
-        post = {'body': form.data['body'],
-               'title': form.data['title'],
-               'date': datetime.now()
-              } 
+@app.route('/recent/')
+def browse():
+    posts = db.session.query(Bulletin).limit(50)
+    recent = Topic('1recentXXXXXXXXXXXXXXXXXXXXbAThAZ')
+    return render_template('topic.html', topic=topic, bulletins=recent.bulletins)
 
-        try:
-            txid = store_post(post)
-            cur = get_db().cursor()
-            cur.execute('INSERT INTO p_transactions VALUES (?, ?, ?)', (txid, post['title'], post['date'].strftime(DATE_F)))
-            # cursor should close 
-            return jsonify(**post), 201
-        except InsufficientFunds as e:
-            return jsonify(error=str(e))
-            
+@app.route('/<string:target>/')
+def render(target):
+    path = target + '.html'
+    return render_template(path)
+
+@app.route('/all/')
+def all_addresses():
+    topics = db.session.query(Topic).all()
+    users = db.session.query(Username).all()
+    return render_template('all_addresses.html', topics=topics, usernames=users)
+
+@app.route('/addr/<string:addr>/')
+def single_addr(addr):
+    obj = db.session.query(Address).get(addr)
+    if obj is None:
+        return render_template('404.html', message='We have no record of this address! Which may or may not be a serious problem.'), 404
+    if type(obj) == Topic:
+        topic = obj
+        bulletins = topic.txs
+        bulletins[0].topics.append(obj)
+        bulletins[0].topics.append(obj)
+        return render_template('topic.html', topic=topic, bulletins=bulletins)
     else:
-        jsonify(error='Your form did not validate')
+        user = obj
+        t = Topic('1maskedXrussianXfrogmenXXXXX3UKRa') 
+        print(user)
+        bulletins = user.txs
+        bulletins[0].topics.append(t)
+        user.txs.append(bulletins[0])
+        return render_template('user.html', user=user, bulletins=bulletins)
+
+@app.route('/tx/<string:txid>/')
+def single_bulletin(txid):
+    bulletin = db.session.query(Bulletin).get(txid)
+    return render_template('single.html', bulletin=bulletin)
+
 
 if __name__ == "__main__":
     if DEV:
         app.run(debug=True, host='0.0.0.0')
     else: 
         app.run()
-    

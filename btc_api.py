@@ -229,8 +229,8 @@ def retrieve_posts(txids):
     return posts
 
 
-def compute_fee(post):
-    tx = post['tx_dict']
+def compute_fee(bulletin):
+    tx = bulletin.tx_dict
     out_coin = 0
     for tx_o in tx['vout']:
         if tx_o['scriptPubKey']['type'] == "pubkeyhash":

@@ -1,37 +1,40 @@
-{% macro inline(post) %}
-    <div class="col-md-12 well">
-        <div class="head">
-            <div class="hwrap">
-                <div class="row">
-                    <div class="col-md-5">
-                        <h3><a href="http://blockexplorer.com/testnet/tx/{{ post.id }}">{{ post.id | truncate(20, True) }}</a></h3>
-                    </div>
-                    <div class="col-md-7">
-                       <h4 class=post-meta>
-                        {% if post.tx_dict %} 
-                            Created: {{ post.date.strftime('%H:%M %b %d, %Y') }}
-                            {% if post.tx_dict.confirmations %}
-                            <div class="confirmed">
-                            Depth: {{ post.tx_dict.confirmations }}
-                            </div>
-                            {% else %}
-                            <div class="unconfirmed">
-                            TRANSACTION UNCONFIRMED
-                            </div>
-                            {% endif %}
-                        {% endif %}
-                       </h4>
-                    </div>
-                </div>
-            </div>
+{% macro inline(bulletin) %}
+<div class="bulletin" >
+    <div class="row" >
+        <div class="col-xs-12">
+        <div class="header">
+        <h3><a href="{{ url_for('single_addr', addr=bulletin.creator.addr) }}">{{ bulletin.creator.name }}</a></h3>
+        <svg class='box' width="15" height="15" >
+           <rect x="0" y="0" width="15" height="15" fill="purple"
+           fill-opacity="0.5" stroke-opacity="0.8"/> 
+        </svg>
+        <h4 class='text-muted'>{{ bulletin.creator.checksum }}</h4>
+        </div></div>
+    </div>
+    <div class="row content">
+        <div class="col-sm-3 topics">
+            <ul class='list-group'>
+               {% for topic in bulletin.topics %} 
+               <li class='list-group-item'><a class="h5" href="{{ url_for('single_addr', addr=topic.addr) }}">{{ topic.title }}</a></li>
+               {% endfor %}
+            </ul> 
+            {% if bulletin.usertags %}
+            <p class="h5"><em>Addressed to:</em></p>
+            <ul class='list-group'>
+               {% for user in bulletin.usertags %} 
+               <li class='list-group-item'><a class="h5" href="{{ url_for('single_addr', addr=user.addr) }}">{{ user.name }}</a></li>
+               {% endfor %}
+            <ul>
+            {% endif %}
         </div>
-        <div class="post-content">
-            {{ render_markdown(post.body) | safe }}
-        </div>
-        <div class="post-foot">
-            Size: {{ post.body | length / 1000 }} KB,
-            Time to Confirm: {{ post.time_diff }},
-            Fee: {{ post | compute_fee }} ฿ 
+        <div class="col-sm-9 body">
+            <h4 class="meta">{{ bulletin.date_created | nice_date }} | Charlottesville, Va</h4>
+            {{ render_markdown(bulletin.body) | safe }}
         </div>
     </div>
+</div> 
+{% endmacro %}
+
+
+{% macro include_js() %}
 {% endmacro %}

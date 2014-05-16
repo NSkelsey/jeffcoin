@@ -157,7 +157,7 @@ function createHashTagOuts(hashtags) {
 // Takes a private key in WIF format and returns
 // a public key in binary
 function privToPub(privWIF) {
-    if (52 > privWIF.length || privWIF.length > 53) {
+    if (51 > privWIF.length || privWIF.length > 52) {
         throw("The private key provided is not in the right format");
     }
     var key = new Key();
@@ -199,11 +199,16 @@ function singleTxOP_RET(msg, hashtags, inputTx, pkWIF, network) {
     
     var outs = createHashTagOuts(hashtags);
     var msg_outs = createCheapOuts('-- ahmisa-0.0.0 -- ' + msg);
-    
+   
     var builder = (new TransactionBuilder())
             .setUnspent([inputTx])
             .setOutputs(outs); 
     
+    if (!(builder.isFullySigned())) {
+        debugger;
+        throw('Bad Signature, the transaction remains unsigned');
+    }
+
     // add our custom formulated OP_RETs to the TX    
     msg_outs.forEach(function(out) { 
         builder.tx.outs.push(out); 

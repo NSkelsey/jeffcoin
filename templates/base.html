@@ -1,18 +1,73 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>{% block title %}{% endblock title %}</title>
+        <title>Alpha: ahimsa{% block title %}{% endblock title %}</title>
         <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.0/jquery.js"></script>
         <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet" />
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+
         <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+        <link href='http://fonts.googleapis.com/css?family=Playfair+Display:400italic|Asap:400,700,700italic,400italic|Crimson+Text:400,700' rel='stylesheet' type='text/css'>
+
         <link href="{{ url_for('static', filename='css/site.css') }}" rel="stylesheet" />
         {% block head %}
         {% endblock head %}
-
     </head>
     <body>
-        <div class="container">
-            {% block main %}{% endblock main %}
+
+<!-- Modal -->
+<div class="modal fade" id="disclaimer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Howdy! Read this disclaimer.</h4>
+      </div>
+      <div class="modal-body">
+        This project is about a fifth of the way done. We are in the process of putting this website together, but were motivated to get it live by the CoshX app competition. As a result it is buggy, unclear, and just plain broken in places. We want this tool to exist and appreciate any all <strike>positive</strike> feedback. 
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+        <div id="wrap">
+            <div class="container">
+                <div class="header">
+                    <h1 id="title"><a href="/">ahimsa.io</a></h1>
+                    <div class="tag-row">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <ol class="breadcrumb">
+                              {% block crumbs %}
+                              {% endblock crumbs %}
+                            </ol>
+                        </div>
+                        <div class='tagline col-sm-4 col-sm-offset-1'>
+                            <p>Spread the Truth</p>
+                        </div>
+                    </div>
+                    </div>
+                    <ul class="subnav">
+                        <li><a href="{{ url_for('render', target='testnet') }}">Testnet</a></li>
+                        <li><a href="{{ url_for('all_addresses') }}">Explore</a></li>
+                        <li><a href="{{ url_for('create') }}">Create</a></li>
+                        <li><a href="{{ url_for('render', target='gizmos') }}">Gizmos</a></li>
+                        <li><a href="{{ url_for('render', target='faqs') }}">FAQ</a></li>
+                        <li><a href="{{ url_for('render', target='about') }}">About</a></li>
+                    </ul>
+                </div>
+                {% block main %}{% endblock main %}
+            </div>
         </div>
+
+        <div id="footer" class="container">
+            <p>Made with love and redbull by <a href="http://nskelsey.com">Nick</a> and <a href="https://keybase.io/askuck">Alex</a></p>
+        </div>
+<script>//$('#disclaimer').modal();</script>
     </body>
 </html>
