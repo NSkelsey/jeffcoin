@@ -1,0 +1,174 @@
+{% extends 'bitcoin_base.html' %}
+
+{% block crumbs %}
+<li><a href="/">Home</a></li>
+<li class="active">Create</li>
+{% endblock crumbs %}
+
+{% block main %}
+<div class="content-section">
+    <div class='section-header'>
+    <h3>Create a new Bulletin!</h3><p class="text-muted">Typically this would cost you around 10¢, but this one is on us.</p>
+</div>
+<div class="justification">
+    <p >This generator shows the guts into what goes into bulletin generation. Its purpose is to demonstrate a message format that can always store messages in the blockchain regardless of what miners or the core bitcoin developers think of this. As long as you have the coins, you can always post.</p>
+    <p> Fortunately for the unemployed among us, we seeded this behemoth with testnet addresses so that you too can run off and play with this. We encourage you to use your own testnet node to post the bulletin you made here. If everything is working on our end, we should pick it up.
+</div>
+
+<!-- form input for a bulletin -->
+<form id='bulletin-form' class="form-horizontal" role="form">
+
+<legend>Bitcoin Parameters</legend>
+<div id='network' class="form-group">
+    <label for="network" class="col-lg-2 control-label">Network</label>
+    <div class="col-lg-3">
+        <div class="btn-group" data-toggle="buttons">
+          <label class="btn btn-default">
+            <input name="options" type="radio" value="mainnet">
+            Mainet
+          </label>
+          <label class="btn btn-default active">
+            <input name="options" type="radio" value="testnet">
+            Testnet
+          </label>
+        </div> 
+    </div>
+</div>
+<div class="form-group">
+    <label for="privKey" class="col-lg-2 control-label">Private Key</label>
+    <div class="col-lg-10">
+        <input type="text" class="form-control" id="privKey" placeholder="Hex string"
+        >
+    </div>
+</div>
+<div class="form-group">
+    <label for="txin-txid-1" class="col-lg-2 control-label">Input Txid</label>
+    <div class="col-lg-10">
+        <div class="row">
+        <div class="col-sm-7">
+            <input type="text" class="form-control" id="txin-txid-1" placeholder="Hash of a txout"
+            >
+        </div>
+        <div class="col-sm-2">
+            <div class="input-group">
+                <span class="input-group-addon">Vout</span>
+                <input type="text" class="form-control" id="txin-index-1" placeholder="Int"
+                >
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="input-group">
+                <span class="input-group-addon">BTC</span>
+                <input type="text" class="form-control" id="txin-value-1" placeholder="Value"
+                >
+            </div>
+        </div>
+        </div> 
+    </div>
+</div>
+ <div class="form-group">
+    <label for="storage-method" class="col-lg-2 control-label">Storage Method</label>
+    <div class="col-lg-3">
+        <div id="storage-method" class="btn-group" data-toggle="buttons">
+          <label class="btn btn-primary active">
+            <input name="options" type="radio" value="permanent">
+            Permanent
+          </label>
+          <label class="btn btn-primary">
+            <input name="options" type="radio" value="cheap">
+            Cheap
+          </label>
+        </div>                        
+    </div>
+</div>
+
+</br>  
+<legend>Bulletin Content</legend>
+<div class="form-group">
+    <label for="message" class="col-lg-2 control-label">Message</label>
+    <div class="col-lg-10">
+        <textarea rows=3 maxlength=140 class="form-control" id="message" placeholder="Write your message here"></textarea>
+    </div>
+</div>
+<div id="hashtags">
+    <div class="form-group"> 
+        <label for="hashtag-1" class="col-lg-2 control-label">Board</label>
+        <div class="col-sm-3 controls">
+            <input type="text" maxlength="25" class="form-control hashtag-bare" placeholder="Whats the topic?" id="hashtag-1-input" >
+        </div>
+        <div class="col-sm-5">
+            <div class="input-group">
+                <span class="input-group-addon">#</span>
+                <input id="hashtag-1-val" type="text" class="form-control hashtag-rdy" placeholder="" readonly="readonly" ></input>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <button class="btn btn-default plus" type="button">+</button>&nbsp<button class="btn btn-default minus" type="button">–</button>
+        </div>
+    </div>
+
+</div>
+<!-- Reference copy of hashtag form group -->
+    <div id='hashtag-cc' style="display: none" class="form-group"> 
+        <label for="hashtag-bare" class="col-lg-2 control-label"></label>
+        <div class="col-sm-3 controls">
+            <input type="text" maxlength="25" class="form-control hashtag-bare" value="">
+        </div>
+        <div class="col-sm-5">
+            <div class="input-group">
+                <span class="input-group-addon">#</span>
+                <input type="text" class="form-control hashtag-rdy" readonly="readonly" value=""></input>
+            </div>
+        </div>
+    </div>
+<!-- Reference copy of usertag form group -->
+    <div id='usertag-cc' style="display: none" class="form-group">
+        <label for="usertag"  class="col-lg-2 control-label">Cc</label>
+        <div class="col-sm-5 controls">
+            <div class="input-group">
+                <span class="input-group-addon">@</span>
+                <input type="text" class="form-control usertag" maxlength=34 value=""></input>
+            </div>
+        </div>
+    </div>
+
+<!-- UserTags -->
+<div id="usertags">
+    <div class="form-group"> 
+        <label for="usertag-1" class="col-lg-2 control-label">UserTags</label>
+        <div class="col-sm-5 controls">
+            <div class="input-group">
+                <span class="input-group-addon">@</span>
+                <input id="usertag-1" type="text" class="form-control usertag" placeholder="A Bitcoin address" maxlength=34 value=""></input>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <button class="btn btn-default plus" type="button">+</button>&nbsp<button class="btn btn-default minus" type="button">–</button>
+        </div>
+    </div>
+</div>
+
+</form>
+<div class="row button-row">
+    <div class="col-sm-12">
+    <button type="button" id="build" class="btn-large btn btn-primary">Generate the Transaction</button>
+    </div>
+</div>
+
+<!-- Success form -->
+<div class="alert alert-success" id="raw-tx">
+    <label>Raw Transaction</label>
+    <p>Copy and paste this into any client that can relay bitcoin transaction and your message will be 
+    stored!</p>
+    <textarea rows=10 class="form-control" id="raw-bytes" readonly onmouseover="this.select()" onmouseout="clearSelection()"></textarea>
+    
+</div>
+
+<!-- Error form -->
+<div class="alert alert-danger" id="raw-error">
+    <label>Bad Parameters!</label>
+    <p class="msg"></p>
+</div>
+</div>
+
+{% endblock main %}

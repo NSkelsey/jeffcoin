@@ -5,7 +5,7 @@
         <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.0/jquery.js"></script>
         <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet" />
         <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-
+        <script src="/static/js/jquery.cookie.js"></script>
         <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
         <link href='http://fonts.googleapis.com/css?family=Playfair+Display:400italic|Asap:400,700,700italic,400italic|Crimson+Text:400,700' rel='stylesheet' type='text/css'>
 
@@ -24,7 +24,7 @@
         <h4 class="modal-title" id="myModalLabel">Howdy! Read this disclaimer.</h4>
       </div>
       <div class="modal-body">
-        This project is about a fifth of the way done. We are in the process of putting this website together, but were motivated to get it live by the CoshX app competition. As a result it is buggy, unclear, and just plain broken in places. We want this tool to exist and appreciate any all <strike>positive</strike> feedback. 
+        This project is about a fifth of the way done. We are in the process of putting this website together, but were motivated to get it live by the CoshX app <a href="http://competition.coshx.com">competition.</a> As a result it is buggy, unclear, and just plain broken in places. We want this tool to exist and appreciate any all <strike>positive</strike> feedback. 
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -53,7 +53,6 @@
                     </div>
                     </div>
                     <ul class="subnav">
-                        <li><a href="{{ url_for('render', target='testnet') }}">Testnet</a></li>
                         <li><a href="{{ url_for('all_addresses') }}">Explore</a></li>
                         <li><a href="{{ url_for('create') }}">Create</a></li>
                         <li><a href="{{ url_for('render', target='gizmos') }}">Gizmos</a></li>
@@ -68,6 +67,27 @@
         <div id="footer" class="container">
             <p>Made with love and redbull by <a href="http://nskelsey.com">Nick</a> and <a href="https://keybase.io/askuck">Alex</a></p>
         </div>
-<script>//$('#disclaimer').modal();</script>
+<script>
+     $(document).ready(function() {
+        if($.cookie('msg') == null)
+        {
+            $('#disclaimer').modal('show');
+            $.cookie('msg', 'visited');
+        }
+    });
+
+</script>
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-51069656-1', 'ahimsa.io');
+  ga('send', 'pageview');
+
+</script>
     </body>
 </html>

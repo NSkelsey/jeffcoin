@@ -1,0 +1,40 @@
+{% extends 'bitcoin_base.html' %}
+
+{% block crumbs %}
+<li><a href='/'>Home</a></li>
+<li class='active'>Gizmos</li>
+{% endblock %}
+
+{% block main %}
+<div class='section-header'>
+    <h3>Gizmos</h3>
+    <p class="text-muted">Some of these gadgets may come in handy</p>
+</div>
+<div class='section-content'>
+<form class='form-inline' onSubmit="return false;">
+    <label>Validate a Bitcoin address </label>
+    <input id="addr-validate" class="form-control" type="text">
+    <button id="addr-button" class="btn btn-primary">Test Address</button>
+    <div id="addr-results" class="alert"></div>
+</form>
+</div>
+
+<script>
+var Address = require('bitcore').Address;
+$("#addr-button").on('click', function() {
+    var addr = $('#addr-validate').val();
+    var addr_bitcore = new Address(addr);
+    var result_box = $("#addr-results");
+    if (addr_bitcore.isValid()) {
+        result_box.removeClass("alert-danger");
+        result_box.addClass("alert-success");
+        result_box.text("It's Valid!"); 
+    } else {
+        result_box.removeClass("alert-success");
+        result_box.addClass("alert-danger");
+        result_box.text("It's Broken!");
+    }
+});
+
+</script>
+{% endblock main %}

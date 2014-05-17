@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% from 'common.html' import inline %}
+
+{% block crumbs %}
+<li  ><a href="/">Home</a></li>
+<li  ><a href="{{ url_for('single_addr', addr=bulletin.creator.addr)}}">User</a></li>
+<li class="active" >Bulletin</li>
+{% endblock crumbs %}
+
+{% block main %}
+{{ inline(bulletin) }}
+{% endblock main %}

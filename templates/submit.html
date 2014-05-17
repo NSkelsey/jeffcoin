@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block head %}
+<script src="{{ url_for('static', filename='browser/bundle.js') }}"></script>
+<script src="{{ url_for('static', filename='rpc.js') }}"></script>
+<script src="{{ url_for('static', filename='utils.js') }}"></script>
+{% endblock head %}
+
+{% block main %}
+<h3>Create a post</h3>
+
+<div id="input-box" class="input-group">
+    <input type="text" class="form-control">
+    <button id="submit" class="btn btn-primary">Post Me!</button>
+</div>
+
+<script>
+
+$('#submit').click(function(){
+    console.log($(this).val());
+    
+    hashtagStr("make a ruckus");
+});
+
+    var conn = getRPCConnection()
+
+
+    conn.getinfo(function(ret){
+        console.log(ret);
+    });
+
+</script>
+{% endblock main %}

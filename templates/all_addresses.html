@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block crumbs %}
+<li><a href='/'>Home</a></li>
+<li class='active'>Addresses</li>
+{% endblock crumbs %}
+
+{% block main %}
+<div class="section-header">
+    <h3>Addresses</h3> <p class="text-muted">This is a flat list of every address our daemon has seen.</p>
+</div>
+<div class="content-section">
+<h4>Users</h4>
+{% for user in usernames %}
+    <div class='user'>
+       <a href="{{ url_for('single_addr', addr=user.addr) }}">{{ user.name }}</a>
+    </div>
+{% endfor %}
+<h4>Topics</h4>
+{% for topic in topics %}
+    <div class='topic'>
+       <a href="{{ url_for('single_addr', addr=topic.addr) }}">{{ topic.title }}</a>
+    </div>
+{% endfor %}
+</div>
+{% endblock main %}
+
+

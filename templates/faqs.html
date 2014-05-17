@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block crumbs %}
+<li><a href="/">Home</a></li>
+<li class="active">FAQs</li>
+{% endblock %}
+
+{% block main %}
+<div class="section-header">
+    <h3>FAQs</h3>
+</div>
+<div class="content-section questions">
+<h3>What are you trying to do again?</h3>
+<p>We are implementing a censorship resistant messaging system. We want public statements and public information to remain public for as long as possible. Bitcoin is an excellent platform to achieve this goal.</p>
+<div class="gutter"></div>
+<h3>Why?</h3>
+<p>Bitcoin has been trumpted as a tool for finacial freedom. We want to use it to empower the fourth estate.
+<div class="gutter"></div>
+<h3>Isn't it expensive and rude to store data in the blockchain?</h3>
+<p>Yes and yes. All told it will be about 12 cents to store a single tweet in the blockchain. But there are a couple methods to reduce that cost further.</p>
+<div class="gutter"></div>
+<h3>Half of your website is totally broken. What am I even looking at?</h3>
+<p>We are aware of how broken it all is and we are working on it. Have an ice pop</p>
+</div>
+<div class="gutter"></div>
+<h3>My country blocked Twitter, won't they also block ahimsa?</h3>
+<p>Great question. Your country could definitely block ahimsa.io since it is a static domain, but anybody could host the content displayed on this site. All you need is a bitcoin server and a copy of our software, which is free and open source.</p>
+<div class="gutter"></div>
+<h3>Ok, that's well and dandy, but aren't you just relying on Bitcoin getting around a governmets ban?</h3>
+<p>In short, yes. Bitcoin is a much harder system to take down then your typical website. In addition, the blockchain <a href="">guarantees</a> the immutability of bulletins stored within it. This means that any computer with access to Bitcoin has access to every bulletin created using ahimsa.</p>
+</div>
+
+{% endblock %}

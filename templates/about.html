@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+
+{% block crumbs %}
+<li><a href="/">Home</a></li>
+<li class="active">About</li>
+{% endblock %}
+
+{% block main %}
+    <div class="section-header">
+        <h3>About</h3> <p class="text-muted">Some technical notes for the curious.</p>
+    </div>
+
+    <div class="content-section about">
+    <h4>Definitions</h4>
+    
+    <h5>Bulletin</h5> A message stored in the Bitcoin blockchain.</br>
+    <h5>Blockchain</h5> The public ledger of every bitcoin transaction.</br>
+
+    <h5>Board</h5> A metadata tag used to group similar bulletins together.</br>
+
+    <h5>User</h5> A bitcoin address from which bulletins originate.</br>
+
+    </br>
+    <p>Like all applications that sit on top of Bitcoin, ahimsa must jump through hula hoops to work properly.</p>
+
+    <p>The crucial and most controversial of these uses the block chain to store application data that has very little to do with the exchange of goods and services. The current method we use to relay messages in the Bitcoin mainnet actually destroys tiny amounts of bitcoin everytime somebody publishes a bulletin.</p>
+
+    <ul class="repos">
+        <li><h4>ahimsa-app</h4><a href='http://github.com/askuck/ahimsa-app'>github</a> <-- Currently a private fork of bitcoin-wallet
+        <li><h4>ahimsad</h4><a href='http://github.com/nskelsey/ahimsad'>github</a> <-- This has very little 
+        <li><h4>ahimsa-node</h4><a href='http://github.com/nskelsey/ahimsa-node'>github</a> <-- This website was forked into this project
+    </ul>
+    </div>
+
+
+{% endblock main %}

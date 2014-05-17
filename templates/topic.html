@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% from 'common.html' import inline %}
+
+{% block crumbs %}
+<li ><a href='/'>Home</a>
+<li class='active'>Topic</a>
+{% endblock crumbs %}
+
+
+{% block main %}
+
+<h3>{{ topic.title }}</h3>
+
+<div class='row'>
+    <div class='col-xs-12'>
+    {% for bulletin in bulletins %}
+        {{ inline(bulletin) }}
+    {% endfor %}
+    </div>
+</div>
+
+
+{% endblock main %}

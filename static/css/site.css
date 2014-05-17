@@ -55,6 +55,7 @@ p {
 .breadcrumb {
     margin-top: 7px;
     margin-bottom: 10px;
+    background-color: white;
 }
 
 .header .tagline p {

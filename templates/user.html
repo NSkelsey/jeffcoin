@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% from 'common.html' import inline %}
+
+{% block crumbs %}
+<li  ><a href="/">Home</a></li>
+<li class="active">User</li>
+{% endblock crumbs %}
+
+
+{% block main %}
+<div class="section-header">
+    <h2>User {{ user.name }}
+    </h2> 
+    <a href="//blockexplorer.com/testnet/address/{{ user.addr }}" class='text-muted'>{{ user.addr }}</a>
+</div>
+<div class="row section-descr">
+<div class="col-sm-4">
+    <img  src="/static/imgs/github.png" width=150 height=150 />
+    <p>We first saw this user on {{ bulletins[-1].date_est | nice_date }}.
+    We cannot say much more than that because we do not have enough information to do anything meaningful.</p>
+</div>
+<div class="col-sm-4">
+   <h5 >Summary</h5>
+   <p>Bulletins sent: {{ user.from_count() }}</p>
+   <p>Bulletins received: {{ user.to_count() }}</p>
+   <p>Satoshis Burned: {{ user.satoshis_burned() }}</p>
+   <p>Fees Paid: {{ user.fees_paid() }}</p>
+</div>
+</div>
+
+
+<div class="row">
+    <div class="list-title col-sm-2 col-sm-offset-6">
+    <h3 class="list-title">Bulletins</h3>
+    </div>
+</div>
+
+
+{% for bulletin in bulletins %}
+    {{ inline(bulletin) }}
+    {% if not loop.last %}
+    <div class="gutter"></div>
+    {% endif %}
+{% endfor %}
+
+
+{% endblock main %}
