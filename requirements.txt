@@ -1,0 +1,10 @@
+Flask==0.10.1
+Flask-SQLAlchemy==1.0
+SQLAlchemy==0.9.4
+Werkzeug==0.9.4
+bleach==1.4
+distribute==0.6.37
+ecdsa==0.11
+gunicorn==18.0
+pycoin==0.42
+requests==2.2.1
