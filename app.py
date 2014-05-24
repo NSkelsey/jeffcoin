@@ -9,16 +9,13 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from werkzeug.contrib.fixers import ProxyFix
 from markdown2 import Markdown
  
-import filters
 import config
-from api import InsightApi 
-from btc_api import retrieve_posts, store_post, InsufficientFunds, compute_fee, coins_left
-from forms import PostForm
+import filters
 from models import Base, Address, Bulletin, Topic, Username
 from utils import secrets_for_post
 
 
-DEV = True
+DEV = False
 DATE_F = "%Y-%m-%d %H:%M:%S"
 
 app = Flask(__name__)
@@ -28,7 +25,6 @@ app.wsgi_app = ProxyFix(app.wsgi_app)
 markdowner = Markdown()
 
 app.jinja_env.globals['render_markdown'] = markdowner.convert
-app.jinja_env.filters['compute_fee'] = compute_fee
 app.jinja_env.filters['nice_date'] = filters.nice_date
 
 db = SQLAlchemy(app)

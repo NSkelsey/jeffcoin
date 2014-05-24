@@ -304,7 +304,8 @@ div.example {
 }
 
 div.image {
-    margin-top: 60px;
+    margin-top: 110px;
+    margin-bottom: 40px;
 }
 
 div.image img {

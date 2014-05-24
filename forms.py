@@ -1,4 +1,3 @@
-import bleach
 from wtforms import Form, TextField, PasswordField, ValidationError
 from wtforms.validators import Required, Length
 
